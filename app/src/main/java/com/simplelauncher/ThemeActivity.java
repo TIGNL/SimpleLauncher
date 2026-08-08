@@ -30,20 +30,15 @@ public class ThemeActivity extends Activity {
 
         updateUI();
 
-        optFollowSystem.setOnClickListener(v -> {
-            prefs.edit().putInt("theme", 0).apply();
-            finish();
-        });
+        optFollowSystem.setOnClickListener(v -> selectTheme(0));
+        optWhite.setOnClickListener(v -> selectTheme(1));
+        optDark.setOnClickListener(v -> selectTheme(2));
+    }
 
-        optWhite.setOnClickListener(v -> {
-            prefs.edit().putInt("theme", 1).apply();
-            finish();
-        });
-
-        optDark.setOnClickListener(v -> {
-            prefs.edit().putInt("theme", 2).apply();
-            finish();
-        });
+    private void selectTheme(int theme) {
+        if (prefs.getInt("theme", 0) == theme) return;
+        prefs.edit().putInt("theme", theme).apply();
+        recreate();
     }
 
     private void applyTheme() {
