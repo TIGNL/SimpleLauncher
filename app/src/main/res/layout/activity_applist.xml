@@ -2,37 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/bg"
     android:orientation="vertical"
     android:paddingTop="48dp">
 
-    <EditText
-        android:id="@+id/searchInput"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/search_bg"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="8dp"
-        android:hint="Search apps..."
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:maxLines="1"
-        android:paddingHorizontal="12dp"
-        android:textColor="#1C1B1F"
-        android:textColorHint="#999999"
-        android:textSize="16sp" />
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="16dp">
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/search_bg"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:hint="Search apps..."
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingHorizontal="12dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:textSize="15sp" />
+
+    </FrameLayout>
 
     <ListView
         android:id="@+id/appList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
-        android:dividerHeight="4dp"
-        android:paddingHorizontal="12dp"
+        android:dividerHeight="0dp"
+        android:paddingHorizontal="16dp"
         android:scrollbarStyle="outsideOverlay" />
 
 </LinearLayout>

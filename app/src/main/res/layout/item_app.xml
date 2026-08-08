@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/appName"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/item_bg"
-    android:ellipsize="end"
+    android:layout_height="64dp"
     android:gravity="center_vertical"
-    android:maxLines="1"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="14dp"
-    android:textColor="#1C1B1F"
-    android:textSize="16sp" />
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp">
+
+    <TextView
+        android:id="@+id/appName"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp" />
+
+</LinearLayout>

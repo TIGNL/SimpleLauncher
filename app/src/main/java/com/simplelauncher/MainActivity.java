@@ -2,8 +2,8 @@ package com.simplelauncher;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -46,9 +47,37 @@ public class MainActivity extends Activity {
                 }
                 return false;
             }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
         });
 
         loadApps();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        applyTheme();
+    }
+
+    private void applyTheme() {
+        int theme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
+        if (theme == 2) {
+            setTheme(android.R.style.Theme_DeviceDefault_NoActionBar);
+            getWindow().getDecorView().setSystemUiVisibility(0);
+        } else if (theme == 1) {
+            setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        } else {
+            setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        }
     }
 
     @Override
