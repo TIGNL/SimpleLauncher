@@ -1,2 +1,1 @@
 -dontwarn javax.annotation.**
--keep class com.simplelauncher.** { *; }
