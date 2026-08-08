@@ -35,12 +35,15 @@ public class MainActivity extends Activity {
     private GridAdapter adapter;
     private List<String[]> apps = new ArrayList<>();
     private List<String[]> filtered = new ArrayList<>();
+    private int lastTheme = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        searchInput = findViewById(R.id.searchInput);
 
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -61,7 +64,24 @@ public class MainActivity extends Activity {
             }
         });
 
+        findViewById(R.id.container).setOnClickListener(v -> {
+            if (appListView == null) {
+                showAppList();
+            }
+        });
+
+        setupSearch();
         loadApps();
+        lastTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int currentTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
+        if (lastTheme != currentTheme) {
+            recreate();
+        }
     }
 
     @Override
@@ -83,36 +103,7 @@ public class MainActivity extends Activity {
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
-    private void loadApps() {
-        apps.clear();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, 0);
-        for (ResolveInfo info : list) {
-            if (!info.activityInfo.packageName.equals(getPackageName())) {
-                String label = info.loadLabel(getPackageManager()).toString();
-                apps.add(new String[]{label, info.activityInfo.packageName});
-            }
-        }
-        Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
-        filtered.clear();
-        filtered.addAll(apps);
-    }
-
-    private void showAppList() {
-        if (appListView != null) return;
-
-        appListView = getLayoutInflater().inflate(R.layout.activity_applist, null);
-        searchInput = appListView.findViewById(R.id.searchInput);
-        listView = appListView.findViewById(R.id.appList);
-
-        View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
-        ((TextView) titleView.findViewById(R.id.pageTitle)).setText("Apps");
-        listView.addHeaderView(titleView);
-
-        adapter = new GridAdapter();
-        listView.setAdapter(adapter);
-
+    private void setupSearch() {
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -129,7 +120,7 @@ public class MainActivity extends Activity {
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                if (adapter != null) adapter.notifyDataSetChanged();
 
                 if (!query.isEmpty() && filtered.size() == 1) {
                     listView.postDelayed(() -> launchApp(filtered.get(0)[1]), 300);
@@ -153,6 +144,36 @@ public class MainActivity extends Activity {
             }
             return false;
         });
+    }
+
+    private void loadApps() {
+        apps.clear();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, 0);
+        for (ResolveInfo info : list) {
+            if (!info.activityInfo.packageName.equals(getPackageName())) {
+                String label = info.loadLabel(getPackageManager()).toString();
+                apps.add(new String[]{label, info.activityInfo.packageName});
+            }
+        }
+        Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+        filtered.clear();
+        filtered.addAll(apps);
+    }
+
+    private void showAppList() {
+        if (appListView != null) return;
+
+        appListView = getLayoutInflater().inflate(R.layout.activity_applist, null);
+        listView = appListView.findViewById(R.id.appList);
+
+        View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
+        ((TextView) titleView.findViewById(R.id.pageTitle)).setText("Apps");
+        listView.addHeaderView(titleView);
+
+        adapter = new GridAdapter();
+        listView.setAdapter(adapter);
 
         FrameLayout container = findViewById(R.id.container);
         container.addView(appListView);
@@ -170,8 +191,8 @@ public class MainActivity extends Activity {
         FrameLayout container = findViewById(R.id.container);
         container.removeView(appListView);
         appListView = null;
-        searchInput = null;
         listView = null;
+        adapter = null;
     }
 
     private void launchApp(String packageName) {
@@ -180,6 +201,7 @@ public class MainActivity extends Activity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             closeAppList();
+            searchInput.setText("");
         }
     }
 
@@ -193,6 +215,7 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (appListView != null) {
             closeAppList();
+            searchInput.setText("");
         }
     }
 

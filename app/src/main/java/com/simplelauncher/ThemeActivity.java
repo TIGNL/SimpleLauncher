@@ -32,17 +32,17 @@ public class ThemeActivity extends Activity {
 
         optFollowSystem.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 0).apply();
-            recreate();
+            finish();
         });
 
         optWhite.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 1).apply();
-            recreate();
+            finish();
         });
 
         optDark.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 2).apply();
-            recreate();
+            finish();
         });
     }
 

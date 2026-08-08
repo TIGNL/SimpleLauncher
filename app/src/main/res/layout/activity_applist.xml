@@ -8,32 +8,11 @@
     <ListView
         android:id="@+id/appList"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
         android:divider="@drawable/divider_horizontal"
         android:dividerHeight="@dimen/divider"
         android:paddingHorizontal="0dp"
         android:scrollbarStyle="outsideOverlay" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider"
-        android:background="@drawable/divider_horizontal" />
-
-    <EditText
-        android:id="@+id/searchInput"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:background="@android:color/transparent"
-        android:gravity="center"
-        android:hint="Search apps..."
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:maxLines="1"
-        android:paddingHorizontal="@dimen/padding"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_hint"
-        android:textSize="15sp" />
 
 </LinearLayout>
