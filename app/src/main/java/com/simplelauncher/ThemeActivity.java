@@ -3,16 +3,17 @@ package com.simplelauncher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class ThemeActivity extends Activity {
 
     private SharedPreferences prefs;
-    private TextView optFollowSystem;
-    private TextView optWhite;
-    private TextView optDark;
+    private View optFollowSystem;
+    private View optWhite;
+    private View optDark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +61,10 @@ public class ThemeActivity extends Activity {
 
     private void updateUI() {
         int theme = prefs.getInt("theme", 0);
-        optFollowSystem.setTypeface(null, theme == 0 ? Typeface.BOLD : Typeface.NORMAL);
-        optWhite.setTypeface(null, theme == 1 ? Typeface.BOLD : Typeface.NORMAL);
-        optDark.setTypeface(null, theme == 2 ? Typeface.BOLD : Typeface.NORMAL);
+        int selected = Color.parseColor("#FF404040");
+        int unselected = Color.TRANSPARENT;
+        optFollowSystem.setBackgroundColor(theme == 0 ? selected : unselected);
+        optWhite.setBackgroundColor(theme == 1 ? selected : unselected);
+        optDark.setBackgroundColor(theme == 2 ? selected : unselected);
     }
 }
