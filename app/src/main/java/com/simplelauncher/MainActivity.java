@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
@@ -43,7 +45,7 @@ public class MainActivity extends Activity {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (velocityY < -500) {
+                if (appListView == null && velocityY < -500) {
                     showAppList();
                     return true;
                 }
@@ -52,8 +54,10 @@ public class MainActivity extends Activity {
 
             @Override
             public void onLongPress(MotionEvent e) {
-                finish();
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                if (appListView == null) {
+                    finish();
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
             }
         });
 
@@ -181,6 +185,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void openAppInfo(String packageName) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.parse("package:" + packageName));
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         if (appListView != null) {
@@ -230,18 +240,28 @@ public class MainActivity extends Activity {
                 holder.leftBox.setVisibility(View.VISIBLE);
                 holder.leftName.setText(filtered.get(leftPos)[0]);
                 holder.leftBox.setOnClickListener(v -> launchApp(filtered.get(leftPos)[1]));
+                holder.leftBox.setOnLongClickListener(v -> {
+                    openAppInfo(filtered.get(leftPos)[1]);
+                    return true;
+                });
             } else {
                 holder.leftBox.setVisibility(View.INVISIBLE);
                 holder.leftBox.setOnClickListener(null);
+                holder.leftBox.setOnLongClickListener(null);
             }
 
             if (rightPos < filtered.size()) {
                 holder.rightBox.setVisibility(View.VISIBLE);
                 holder.rightName.setText(filtered.get(rightPos)[0]);
                 holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
+                holder.rightBox.setOnLongClickListener(v -> {
+                    openAppInfo(filtered.get(rightPos)[1]);
+                    return true;
+                });
             } else {
                 holder.rightBox.setVisibility(View.INVISIBLE);
                 holder.rightBox.setOnClickListener(null);
+                holder.rightBox.setOnLongClickListener(null);
             }
 
             return convertView;
