@@ -2,7 +2,6 @@ package com.simplelauncher
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
@@ -36,6 +35,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,10 +51,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -60,8 +61,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 
 data class AppInfo(
@@ -104,6 +105,8 @@ fun LauncherScreen() {
 
 @Composable
 fun HomeScreen(onSwipeUp: () -> Unit) {
+    val interactionAlpha by remember { mutableStateOf(1f) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -123,15 +126,22 @@ fun HomeScreen(onSwipeUp: () -> Unit) {
         ) {
             Text(
                 text = "Simple Launcher",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Light
+                fontWeight = FontWeight.Thin
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Swipe up to see apps",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            Icon(
+                imageVector = Icons.Rounded.KeyboardArrowDown,
+                contentDescription = "Swipe up",
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                modifier = Modifier.size(32.dp)
             )
         }
     }
@@ -158,7 +168,6 @@ fun AppListScreen(
         }
     }
 
-    // Auto-launch on perfect match or single result
     LaunchedEffect(filteredApps, searchQuery) {
         if (searchQuery.isNotEmpty() && filteredApps.size == 1) {
             kotlinx.coroutines.delay(300)
@@ -195,12 +204,17 @@ fun AppListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .focusRequester(focusRequester),
-                placeholder = { Text("Search apps...") },
+                placeholder = {
+                    Text(
+                        "Search apps...",
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
                 singleLine = true,
@@ -210,20 +224,20 @@ fun AppListScreen(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                     cursorColor = MaterialTheme.colorScheme.primary,
-                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(filteredApps) { app ->
@@ -232,20 +246,37 @@ fun AppListScreen(
             }
         }
 
-        Box(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .align(Alignment.TopCenter)
-                .clickable { onDismiss() }
-                .padding(vertical = 8.dp)
+                .clickable { onDismiss() },
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+            ),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Text(
-                text = "▼ Swipe down to close",
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Swipe down to close",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 }
@@ -254,25 +285,37 @@ fun AppListScreen(
 fun AppItem(app: AppInfo, onClick: () -> Unit) {
     Column(
         modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        app.icon?.let { drawable ->
-            Image(
-                bitmap = drawable.toBitmap(48, 48).asImageBitmap(),
-                contentDescription = app.label,
-                modifier = Modifier.size(48.dp)
-            )
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            app.icon?.let { drawable ->
+                Image(
+                    bitmap = drawable.toBitmap(64, 64).asImageBitmap(),
+                    contentDescription = app.label,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .padding(8.dp)
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = app.label,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onBackground,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(64.dp)
+            modifier = Modifier.width(72.dp)
         )
     }
 }
