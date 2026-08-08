@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -40,7 +40,6 @@ public class MainActivity extends Activity {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        applyBackgroundColor();
 
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -77,16 +76,10 @@ public class MainActivity extends Activity {
         } else {
             setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
         }
-    }
-
-    private void applyBackgroundColor() {
-        int theme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
-        View container = findViewById(R.id.container);
-        if (theme == 2) {
-            container.setBackgroundColor(Color.parseColor("#121212"));
-        } else {
-            container.setBackgroundColor(Color.WHITE);
-        }
+        Configuration config = new Configuration(getResources().getConfiguration());
+        config.uiMode = (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+                | (theme == 2 ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
     private void loadApps() {
