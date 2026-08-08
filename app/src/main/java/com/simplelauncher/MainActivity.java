@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        applyBackgroundColor();
 
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -73,6 +75,16 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void applyBackgroundColor() {
+        int theme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
+        View container = findViewById(R.id.container);
+        if (theme == 2) {
+            container.setBackgroundColor(Color.parseColor("#121212"));
+        } else {
+            container.setBackgroundColor(Color.parseColor("#F5F5F5"));
+        }
+    }
+
     private void loadApps() {
         apps.clear();
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -98,20 +110,6 @@ public class MainActivity extends Activity {
 
         adapter = new GridAdapter();
         listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            int pos = position * 2;
-            if (pos < filtered.size()) launchApp(filtered.get(pos)[1]);
-        });
-
-        listView.setOnItemLongClickListener((parent, view, position, id) -> {
-            int pos = position * 2 + 1;
-            if (pos < filtered.size()) {
-                launchApp(filtered.get(pos)[1]);
-                return true;
-            }
-            return false;
-        });
 
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -215,10 +213,10 @@ public class MainActivity extends Activity {
                 convertView = LayoutInflater.from(MainActivity.this)
                         .inflate(R.layout.item_app_row, parent, false);
                 holder = new ViewHolder();
-                holder.leftContainer = convertView.findViewById(R.id.leftContainer);
+                holder.leftBox = convertView.findViewById(R.id.leftBox);
                 holder.leftName = convertView.findViewById(R.id.leftName);
                 holder.divider = convertView.findViewById(R.id.divider);
-                holder.rightContainer = convertView.findViewById(R.id.rightContainer);
+                holder.rightBox = convertView.findViewById(R.id.rightBox);
                 holder.rightName = convertView.findViewById(R.id.rightName);
                 convertView.setTag(holder);
             } else {
@@ -229,27 +227,31 @@ public class MainActivity extends Activity {
             int rightPos = position * 2 + 1;
 
             if (leftPos < filtered.size()) {
-                holder.leftContainer.setVisibility(View.VISIBLE);
+                holder.leftBox.setVisibility(View.VISIBLE);
                 holder.leftName.setText(filtered.get(leftPos)[0]);
+                holder.leftBox.setOnClickListener(v -> launchApp(filtered.get(leftPos)[1]));
             } else {
-                holder.leftContainer.setVisibility(View.INVISIBLE);
+                holder.leftBox.setVisibility(View.INVISIBLE);
+                holder.leftBox.setOnClickListener(null);
             }
 
             if (rightPos < filtered.size()) {
-                holder.rightContainer.setVisibility(View.VISIBLE);
+                holder.rightBox.setVisibility(View.VISIBLE);
                 holder.rightName.setText(filtered.get(rightPos)[0]);
+                holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
             } else {
-                holder.rightContainer.setVisibility(View.INVISIBLE);
+                holder.rightBox.setVisibility(View.INVISIBLE);
+                holder.rightBox.setOnClickListener(null);
             }
 
             return convertView;
         }
 
         class ViewHolder {
-            View leftContainer;
+            View leftBox;
             TextView leftName;
             View divider;
-            View rightContainer;
+            View rightBox;
             TextView rightName;
         }
     }

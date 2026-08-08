@@ -2,7 +2,9 @@ package com.simplelauncher;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
@@ -17,6 +19,7 @@ public class SettingsActivity extends Activity {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        applyBackgroundColor();
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
         optFollowSystem = findViewById(R.id.optFollowSystem);
@@ -50,6 +53,12 @@ public class SettingsActivity extends Activity {
         } else {
             setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
         }
+    }
+
+    private void applyBackgroundColor() {
+        int theme = prefs != null ? prefs.getInt("theme", 0) : 0;
+        int color = theme == 2 ? Color.parseColor("#121212") : Color.parseColor("#F5F5F5");
+        findViewById(android.R.id.content).setBackgroundColor(color);
     }
 
     private void updateUI() {

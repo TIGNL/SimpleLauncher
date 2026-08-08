@@ -2,28 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/row_height"
-    android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/padding">
+    android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/leftContainer"
+    <FrameLayout
+        android:id="@+id/leftBox"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:background="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/leftName"
             android:layout_width="match_parent"
             android:layout_height="@dimen/content_height"
+            android:layout_gravity="center"
+            android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/padding"
             android:textColor="@color/text_primary"
             android:textSize="14sp" />
 
-    </LinearLayout>
+    </FrameLayout>
 
     <View
         android:id="@+id/divider"
@@ -31,24 +31,25 @@
         android:layout_height="match_parent"
         android:background="@drawable/divider_vertical" />
 
-    <LinearLayout
-        android:id="@+id/rightContainer"
+    <FrameLayout
+        android:id="@+id/rightBox"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:background="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/rightName"
             android:layout_width="match_parent"
             android:layout_height="@dimen/content_height"
+            android:layout_gravity="center"
+            android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/padding"
             android:textColor="@color/text_primary"
             android:textSize="14sp" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
