@@ -299,7 +299,7 @@ private fun getInstalledApps(context: Context): List<AppInfo> {
 }
 
 private fun launchApp(context: Context, packageName: String) {
-    val intent = packageManager.getLaunchIntentForPackage(packageName)
+    val intent = context.packageManager.getLaunchIntentForPackage(packageName)
     intent?.let {
         it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(it)
