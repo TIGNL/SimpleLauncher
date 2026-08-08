@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="divider">2dp</dimen>
+    <dimen name="row_height">64dp</dimen>
+    <dimen name="content_height">32dp</dimen>
+    <dimen name="padding">16dp</dimen>
+</resources>

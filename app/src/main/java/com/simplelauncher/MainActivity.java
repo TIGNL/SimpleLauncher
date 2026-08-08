@@ -8,15 +8,15 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private View appListView;
     private EditText searchInput;
     private ListView listView;
-    private ArrayAdapter<String> adapter;
+    private GridAdapter adapter;
     private List<String[]> apps = new ArrayList<>();
     private List<String[]> filtered = new ArrayList<>();
 
@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
 
             @Override
             public void onLongPress(MotionEvent e) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                finish();
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             }
         });
 
@@ -59,31 +59,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        applyTheme();
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void applyTheme() {
         int theme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
         if (theme == 2) {
             setTheme(android.R.style.Theme_DeviceDefault_NoActionBar);
-            getWindow().getDecorView().setSystemUiVisibility(0);
-        } else if (theme == 1) {
-            setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         } else {
             setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         }
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        gestureDetector.onTouchEvent(ev);
-        return super.dispatchTouchEvent(ev);
     }
 
     private void loadApps() {
@@ -98,6 +85,7 @@ public class MainActivity extends Activity {
             }
         }
         Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+        filtered.clear();
         filtered.addAll(apps);
     }
 
@@ -108,13 +96,21 @@ public class MainActivity extends Activity {
         searchInput = appListView.findViewById(R.id.searchInput);
         listView = appListView.findViewById(R.id.appList);
 
-        List<String> names = new ArrayList<>();
-        for (String[] app : filtered) names.add(app[0]);
-        adapter = new ArrayAdapter<>(this, R.layout.item_app, R.id.appName, names);
+        adapter = new GridAdapter();
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-            launchApp(filtered.get(position)[1]);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            int pos = position * 2;
+            if (pos < filtered.size()) launchApp(filtered.get(pos)[1]);
+        });
+
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            int pos = position * 2 + 1;
+            if (pos < filtered.size()) {
+                launchApp(filtered.get(pos)[1]);
+                return true;
+            }
+            return false;
         });
 
         searchInput.addTextChangedListener(new TextWatcher() {
@@ -133,10 +129,6 @@ public class MainActivity extends Activity {
                         }
                     }
                 }
-                List<String> names = new ArrayList<>();
-                for (String[] app : filtered) names.add(app[0]);
-                adapter.clear();
-                adapter.addAll(names);
                 adapter.notifyDataSetChanged();
 
                 if (!query.isEmpty() && filtered.size() == 1) {
@@ -153,8 +145,9 @@ public class MainActivity extends Activity {
         });
 
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if (imm != null) imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
                 return true;
             }
@@ -166,8 +159,9 @@ public class MainActivity extends Activity {
 
         searchInput.requestFocus();
         listView.postDelayed(() -> {
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
+            android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
         }, 200);
     }
 
@@ -195,6 +189,70 @@ public class MainActivity extends Activity {
             closeAppList();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private class GridAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return (filtered.size() + 1) / 2;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(MainActivity.this)
+                        .inflate(R.layout.item_app_row, parent, false);
+                holder = new ViewHolder();
+                holder.leftContainer = convertView.findViewById(R.id.leftContainer);
+                holder.leftName = convertView.findViewById(R.id.leftName);
+                holder.divider = convertView.findViewById(R.id.divider);
+                holder.rightContainer = convertView.findViewById(R.id.rightContainer);
+                holder.rightName = convertView.findViewById(R.id.rightName);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            int leftPos = position * 2;
+            int rightPos = position * 2 + 1;
+
+            if (leftPos < filtered.size()) {
+                holder.leftContainer.setVisibility(View.VISIBLE);
+                holder.leftName.setText(filtered.get(leftPos)[0]);
+            } else {
+                holder.leftContainer.setVisibility(View.INVISIBLE);
+            }
+
+            if (rightPos < filtered.size()) {
+                holder.divider.setVisibility(View.VISIBLE);
+                holder.rightContainer.setVisibility(View.VISIBLE);
+                holder.rightName.setText(filtered.get(rightPos)[0]);
+            } else {
+                holder.divider.setVisibility(View.INVISIBLE);
+                holder.rightContainer.setVisibility(View.INVISIBLE);
+            }
+
+            return convertView;
+        }
+
+        class ViewHolder {
+            View leftContainer;
+            TextView leftName;
+            View divider;
+            View rightContainer;
+            TextView rightName;
         }
     }
 }

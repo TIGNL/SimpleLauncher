@@ -3,7 +3,6 @@ package com.simplelauncher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
@@ -29,19 +28,16 @@ public class SettingsActivity extends Activity {
         optFollowSystem.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 0).apply();
             recreate();
-            overridePendingTransition(0, 0);
         });
 
         optWhite.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 1).apply();
             recreate();
-            overridePendingTransition(0, 0);
         });
 
         optDark.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 2).apply();
             recreate();
-            overridePendingTransition(0, 0);
         });
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
