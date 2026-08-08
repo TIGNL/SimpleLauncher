@@ -236,11 +236,9 @@ public class MainActivity extends Activity {
             }
 
             if (rightPos < filtered.size()) {
-                holder.divider.setVisibility(View.VISIBLE);
                 holder.rightContainer.setVisibility(View.VISIBLE);
                 holder.rightName.setText(filtered.get(rightPos)[0]);
             } else {
-                holder.divider.setVisibility(View.INVISIBLE);
                 holder.rightContainer.setVisibility(View.INVISIBLE);
             }
 
