@@ -3,15 +3,11 @@ package com.simplelauncher
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
-import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -25,17 +21,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -51,10 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -63,12 +54,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
+import kotlinx.coroutines.delay
 
 data class AppInfo(
     val label: String,
-    val packageName: String,
-    val icon: Drawable?
+    val packageName: String
 )
 
 @Composable
@@ -82,9 +72,7 @@ fun LauncherScreen() {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        HomeScreen(
-            onSwipeUp = { showAppList = true }
-        )
+        HomeScreen(onSwipeUp = { showAppList = true })
 
         AnimatedVisibility(
             visible = showAppList,
@@ -105,46 +93,16 @@ fun LauncherScreen() {
 
 @Composable
 fun HomeScreen(onSwipeUp: () -> Unit) {
-    val interactionAlpha by remember { mutableStateOf(1f) }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .pointerInput(Unit) {
                 detectVerticalDragGestures { _, dragAmount ->
-                    if (dragAmount < -50) {
-                        onSwipeUp()
-                    }
+                    if (dragAmount < -50) onSwipeUp()
                 }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Simple Launcher",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Thin
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Swipe up to see apps",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-            Icon(
-                imageVector = Icons.Rounded.KeyboardArrowDown,
-                contentDescription = "Swipe up",
-                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                modifier = Modifier.size(32.dp)
-            )
-        }
-    }
+            }
+    )
 }
 
 @Composable
@@ -158,26 +116,23 @@ fun AppListScreen(
     val focusManager = LocalFocusManager.current
 
     val filteredApps = remember(searchQuery, apps) {
-        if (searchQuery.isEmpty()) {
-            apps
-        } else {
-            apps.filter { app ->
-                app.label.contains(searchQuery, ignoreCase = true) ||
-                app.packageName.contains(searchQuery, ignoreCase = true)
-            }
+        if (searchQuery.isEmpty()) apps
+        else apps.filter {
+            it.label.contains(searchQuery, ignoreCase = true) ||
+            it.packageName.contains(searchQuery, ignoreCase = true)
         }
     }
 
     LaunchedEffect(filteredApps, searchQuery) {
         if (searchQuery.isNotEmpty() && filteredApps.size == 1) {
-            kotlinx.coroutines.delay(300)
+            delay(300)
             onAppClick(filteredApps[0])
         } else if (searchQuery.isNotEmpty()) {
             val perfectMatch = filteredApps.find {
                 it.label.equals(searchQuery, ignoreCase = true)
             }
             if (perfectMatch != null) {
-                kotlinx.coroutines.delay(300)
+                delay(300)
                 onAppClick(perfectMatch)
             }
         }
@@ -192,11 +147,7 @@ fun AppListScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 48.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxSize().padding(top = 48.dp)) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -204,146 +155,83 @@ fun AppListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .focusRequester(focusRequester),
-                placeholder = {
-                    Text(
-                        "Search apps...",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    )
-                },
+                placeholder = { Text("Search apps...") },
                 leadingIcon = {
-                    Icon(
-                        Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
+                    Icon(Icons.Default.Search, contentDescription = null)
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = { focusManager.clearFocus() }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(16.dp)
+                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+            LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(filteredApps) { app ->
-                    AppItem(app = app, onClick = { onAppClick(app) })
+                items(filteredApps.chunked(2)) { row ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row.forEach { app ->
+                            AppItem(
+                                app = app,
+                                onClick = { onAppClick(app) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (row.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
                 }
-            }
-        }
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopCenter)
-                .clickable { onDismiss() },
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Swipe down to close",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelLarge
-                )
             }
         }
     }
 }
 
 @Composable
-fun AppItem(app: AppInfo, onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+fun AppItem(app: AppInfo, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
-            app.icon?.let { drawable ->
-                Image(
-                    bitmap = drawable.toBitmap(64, 64).asImageBitmap(),
-                    contentDescription = app.label,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .padding(8.dp)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = app.label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.width(72.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp)
         )
     }
 }
 
 private fun getInstalledApps(context: Context): List<AppInfo> {
-    val packageManager = context.packageManager
     val intent = Intent(Intent.ACTION_MAIN).apply {
         addCategory(Intent.CATEGORY_LAUNCHER)
     }
-
-    val resolveInfos: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
-
-    return resolveInfos
+    return context.packageManager.queryIntentActivities(intent, 0)
         .filter { it.activityInfo.packageName != context.packageName }
-        .map { resolveInfo ->
-            val activityInfo = resolveInfo.activityInfo
+        .map {
             AppInfo(
-                label = resolveInfo.loadLabel(packageManager).toString(),
-                packageName = activityInfo.packageName,
-                icon = activityInfo.loadIcon(packageManager)
+                label = it.loadLabel(context.packageManager).toString(),
+                packageName = it.activityInfo.packageName
             )
         }
         .sortedBy { it.label.lowercase() }
 }
 
 private fun launchApp(context: Context, packageName: String) {
-    val intent = context.packageManager.getLaunchIntentForPackage(packageName)
-    intent?.let {
+    context.packageManager.getLaunchIntentForPackage(packageName)?.let {
         it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(it)
     }
