@@ -19,6 +19,8 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        ((TextView) findViewById(R.id.pageTitle)).setText("Settings");
+
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
         optFollowSystem = findViewById(R.id.optFollowSystem);
         optWhite = findViewById(R.id.optWhite);

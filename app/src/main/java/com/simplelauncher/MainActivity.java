@@ -105,6 +105,10 @@ public class MainActivity extends Activity {
         searchInput = appListView.findViewById(R.id.searchInput);
         listView = appListView.findViewById(R.id.appList);
 
+        View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
+        ((TextView) titleView.findViewById(R.id.pageTitle)).setText("Apps");
+        listView.addHeaderView(titleView);
+
         adapter = new GridAdapter();
         listView.setAdapter(adapter);
 
@@ -245,6 +249,7 @@ public class MainActivity extends Activity {
 
             if (rightPos < filtered.size()) {
                 holder.rightBox.setVisibility(View.VISIBLE);
+                holder.divider.setVisibility(View.VISIBLE);
                 holder.rightName.setText(filtered.get(rightPos)[0]);
                 holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
                 holder.rightBox.setOnLongClickListener(v -> {
@@ -253,6 +258,7 @@ public class MainActivity extends Activity {
                 });
             } else {
                 holder.rightBox.setVisibility(View.INVISIBLE);
+                holder.divider.setVisibility(View.INVISIBLE);
                 holder.rightBox.setOnClickListener(null);
                 holder.rightBox.setOnLongClickListener(null);
             }

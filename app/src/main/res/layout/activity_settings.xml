@@ -1,81 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/padding"
-        android:text="Settings"
-        android:textColor="@color/text_primary"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider"
-        android:background="@drawable/divider_horizontal" />
+        <include layout="@layout/item_page_title" />
 
-    <TextView
-        android:id="@+id/labelTheme"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/padding"
-        android:text="Theme"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/labelTheme"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/padding"
+            android:text="Theme"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider"
-        android:background="@drawable/divider_horizontal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider"
+            android:background="@drawable/divider_horizontal" />
 
-    <TextView
-        android:id="@+id/optFollowSystem"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:background="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/padding"
-        android:text="Follow system"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
+        <TextView
+            android:id="@+id/optFollowSystem"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/padding"
+            android:text="Follow system"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider"
-        android:background="@drawable/divider_horizontal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider"
+            android:background="@drawable/divider_horizontal" />
 
-    <TextView
-        android:id="@+id/optWhite"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:background="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/padding"
-        android:text="White"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
+        <TextView
+            android:id="@+id/optWhite"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/padding"
+            android:text="White"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider"
-        android:background="@drawable/divider_horizontal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider"
+            android:background="@drawable/divider_horizontal" />
 
-    <TextView
-        android:id="@+id/optDark"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:background="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/padding"
-        android:text="Dark"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp" />
+        <TextView
+            android:id="@+id/optDark"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/padding"
+            android:text="Dark"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
-</LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

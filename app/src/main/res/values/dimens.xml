@@ -4,4 +4,5 @@
     <dimen name="row_height">64dp</dimen>
     <dimen name="content_height">32dp</dimen>
     <dimen name="padding">16dp</dimen>
+    <dimen name="page_title_height">256dp</dimen>
 </resources>
