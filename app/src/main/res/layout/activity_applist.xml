@@ -25,7 +25,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider"
-        android:background="@color/divider" />
+        android:background="@drawable/divider_horizontal" />
 
     <ListView
         android:id="@+id/appList"
@@ -33,7 +33,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:divider="@android:color/transparent"
+        android:divider="@drawable/divider_horizontal"
         android:dividerHeight="@dimen/divider"
         android:paddingHorizontal="@dimen/padding"
         android:scrollbarStyle="outsideOverlay" />
