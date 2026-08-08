@@ -225,6 +225,7 @@ public class MainActivity extends Activity {
                 holder.divider = convertView.findViewById(R.id.divider);
                 holder.rightBox = convertView.findViewById(R.id.rightBox);
                 holder.rightName = convertView.findViewById(R.id.rightName);
+                holder.bottomDivider = convertView.findViewById(R.id.bottomDivider);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -250,6 +251,7 @@ public class MainActivity extends Activity {
             if (rightPos < filtered.size()) {
                 holder.rightBox.setVisibility(View.VISIBLE);
                 holder.divider.setVisibility(View.VISIBLE);
+                holder.bottomDivider.setVisibility(View.VISIBLE);
                 holder.rightName.setText(filtered.get(rightPos)[0]);
                 holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
                 holder.rightBox.setOnLongClickListener(v -> {
@@ -259,6 +261,7 @@ public class MainActivity extends Activity {
             } else {
                 holder.rightBox.setVisibility(View.INVISIBLE);
                 holder.divider.setVisibility(View.INVISIBLE);
+                holder.bottomDivider.setVisibility(View.INVISIBLE);
                 holder.rightBox.setOnClickListener(null);
                 holder.rightBox.setOnLongClickListener(null);
             }
@@ -272,6 +275,7 @@ public class MainActivity extends Activity {
             View divider;
             View rightBox;
             TextView rightName;
+            View bottomDivider;
         }
     }
 }

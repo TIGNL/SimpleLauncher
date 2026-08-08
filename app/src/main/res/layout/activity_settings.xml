@@ -13,60 +13,13 @@
         <include layout="@layout/item_page_title" />
 
         <TextView
-            android:id="@+id/labelTheme"
+            android:id="@+id/themeRow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/padding"
             android:text="Theme"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider"
-            android:background="@drawable/divider_horizontal" />
-
-        <TextView
-            android:id="@+id/optFollowSystem"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Follow system"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider"
-            android:background="@drawable/divider_horizontal" />
-
-        <TextView
-            android:id="@+id/optWhite"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="White"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider"
-            android:background="@drawable/divider_horizontal" />
-
-        <TextView
-            android:id="@+id/optDark"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Dark"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
 

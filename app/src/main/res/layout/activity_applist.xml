@@ -11,8 +11,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:divider="@drawable/divider_horizontal"
-        android:dividerHeight="@dimen/divider"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:paddingHorizontal="0dp"
         android:scrollbarStyle="outsideOverlay" />
 
