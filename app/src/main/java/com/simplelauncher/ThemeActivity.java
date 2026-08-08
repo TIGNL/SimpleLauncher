@@ -43,6 +43,8 @@ public class ThemeActivity extends Activity {
 
     private void applyTheme() {
         int theme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
+        int systemNight = getApplicationContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
         int nightMode;
         if (theme == 2) {
             setTheme(android.R.style.Theme_DeviceDefault_NoActionBar);
@@ -51,7 +53,6 @@ public class ThemeActivity extends Activity {
             setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar);
             nightMode = Configuration.UI_MODE_NIGHT_NO;
         } else {
-            int systemNight = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
             if (systemNight == Configuration.UI_MODE_NIGHT_YES) {
                 setTheme(android.R.style.Theme_DeviceDefault_NoActionBar);
             } else {
