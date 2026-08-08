@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
 
         appListView = getLayoutInflater().inflate(R.layout.activity_applist, null);
         searchInput = appListView.findViewById(R.id.searchInput);
-        listView = appListView.findViewById(R.appList);
+        listView = appListView.findViewById(R.id.appList);
 
         List<String> names = new ArrayList<>();
         for (String[] app : filtered) names.add(app[0]);
