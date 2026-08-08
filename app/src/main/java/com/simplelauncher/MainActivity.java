@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
         if (theme == 2) {
             container.setBackgroundColor(Color.parseColor("#121212"));
         } else {
-            container.setBackgroundColor(Color.parseColor("#F5F5F5"));
+            container.setBackgroundColor(Color.WHITE);
         }
     }
 

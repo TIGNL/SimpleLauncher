@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
@@ -42,8 +41,6 @@ public class SettingsActivity extends Activity {
             prefs.edit().putInt("theme", 2).apply();
             recreate();
         });
-
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     private void applyTheme() {
@@ -57,7 +54,7 @@ public class SettingsActivity extends Activity {
 
     private void applyBackgroundColor() {
         int theme = prefs != null ? prefs.getInt("theme", 0) : 0;
-        int color = theme == 2 ? Color.parseColor("#121212") : Color.parseColor("#F5F5F5");
+        int color = theme == 2 ? Color.parseColor("#121212") : Color.WHITE;
         findViewById(android.R.id.content).setBackgroundColor(color);
     }
 
