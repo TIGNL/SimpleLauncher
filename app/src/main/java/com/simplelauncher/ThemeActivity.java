@@ -61,7 +61,7 @@ public class ThemeActivity extends Activity {
 
     private void updateUI() {
         int theme = prefs.getInt("theme", 0);
-        int selected = Color.parseColor("#FF404040");
+        int selected = Color.parseColor("#80808080");
         int unselected = Color.TRANSPARENT;
         optFollowSystem.setBackgroundColor(theme == 0 ? selected : unselected);
         optWhite.setBackgroundColor(theme == 1 ? selected : unselected);
