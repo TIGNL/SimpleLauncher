@@ -45,6 +45,12 @@ public class MainActivity extends Activity {
 
         searchInput = findViewById(R.id.searchInput);
 
+        searchInput.setOnClickListener(v -> {
+            if (appListView == null) {
+                showAppList();
+            }
+        });
+
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -58,7 +64,6 @@ public class MainActivity extends Activity {
             @Override
             public void onLongPress(MotionEvent e) {
                 if (appListView == null) {
-                    finish();
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 }
             }
