@@ -12,48 +12,99 @@
 
         <include layout="@layout/item_page_title" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/optFollowSystem"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Follow system"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Follow system"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/checkFollowSystem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u2713"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider"
             android:background="@drawable/divider_horizontal" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/optWhite"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="White"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="White"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/checkWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u2713"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider"
             android:background="@drawable/divider_horizontal" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/optDark"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Dark"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dark"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/checkDark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u2713"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -248,8 +249,11 @@ public class MainActivity extends Activity {
             }
 
             if (rightPos < filtered.size()) {
-                holder.rightBox.setVisibility(View.VISIBLE);
                 holder.divider.setVisibility(View.VISIBLE);
+                holder.rightBox.setVisibility(View.VISIBLE);
+                ViewGroup.LayoutParams leftParams = holder.leftBox.getLayoutParams();
+                leftParams.width = 0;
+                ((LinearLayout.LayoutParams) leftParams).weight = 1;
                 holder.rightName.setText(filtered.get(rightPos)[0]);
                 holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
                 holder.rightBox.setOnLongClickListener(v -> {
@@ -257,8 +261,11 @@ public class MainActivity extends Activity {
                     return true;
                 });
             } else {
-                holder.rightBox.setVisibility(View.INVISIBLE);
-                holder.divider.setVisibility(View.INVISIBLE);
+                holder.divider.setVisibility(View.GONE);
+                holder.rightBox.setVisibility(View.GONE);
+                ViewGroup.LayoutParams leftParams = holder.leftBox.getLayoutParams();
+                leftParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                ((LinearLayout.LayoutParams) leftParams).weight = 0;
                 holder.rightBox.setOnClickListener(null);
                 holder.rightBox.setOnLongClickListener(null);
             }
