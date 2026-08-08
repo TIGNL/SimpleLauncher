@@ -3,16 +3,16 @@ package com.simplelauncher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 public class ThemeActivity extends Activity {
 
     private SharedPreferences prefs;
-    private View checkFollowSystem;
-    private View checkWhite;
-    private View checkDark;
+    private TextView optFollowSystem;
+    private TextView optWhite;
+    private TextView optDark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,23 +23,23 @@ public class ThemeActivity extends Activity {
         ((TextView) findViewById(R.id.pageTitle)).setText("Theme");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        checkFollowSystem = findViewById(R.id.checkFollowSystem);
-        checkWhite = findViewById(R.id.checkWhite);
-        checkDark = findViewById(R.id.checkDark);
+        optFollowSystem = findViewById(R.id.optFollowSystem);
+        optWhite = findViewById(R.id.optWhite);
+        optDark = findViewById(R.id.optDark);
 
         updateUI();
 
-        findViewById(R.id.optFollowSystem).setOnClickListener(v -> {
+        optFollowSystem.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 0).apply();
             recreate();
         });
 
-        findViewById(R.id.optWhite).setOnClickListener(v -> {
+        optWhite.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 1).apply();
             recreate();
         });
 
-        findViewById(R.id.optDark).setOnClickListener(v -> {
+        optDark.setOnClickListener(v -> {
             prefs.edit().putInt("theme", 2).apply();
             recreate();
         });
@@ -60,8 +60,8 @@ public class ThemeActivity extends Activity {
 
     private void updateUI() {
         int theme = prefs.getInt("theme", 0);
-        checkFollowSystem.setVisibility(theme == 0 ? View.VISIBLE : View.GONE);
-        checkWhite.setVisibility(theme == 1 ? View.VISIBLE : View.GONE);
-        checkDark.setVisibility(theme == 2 ? View.VISIBLE : View.GONE);
+        optFollowSystem.setTypeface(null, theme == 0 ? Typeface.BOLD : Typeface.NORMAL);
+        optWhite.setTypeface(null, theme == 1 ? Typeface.BOLD : Typeface.NORMAL);
+        optDark.setTypeface(null, theme == 2 ? Typeface.BOLD : Typeface.NORMAL);
     }
 }
