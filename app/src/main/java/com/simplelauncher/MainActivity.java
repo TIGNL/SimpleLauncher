@@ -193,8 +193,6 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (appListView != null) {
             closeAppList();
-        } else {
-            super.onBackPressed();
         }
     }
 
