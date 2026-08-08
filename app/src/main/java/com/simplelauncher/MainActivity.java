@@ -86,7 +86,15 @@ public class MainActivity extends Activity {
         int currentTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
         if (lastTheme != currentTheme) {
             recreate();
+        } else {
+            closeAppList();
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        closeAppList();
     }
 
     @Override
