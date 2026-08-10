@@ -163,15 +163,28 @@ public class MainActivity extends Activity {
                 }
                 if (adapter != null) adapter.notifyDataSetChanged();
 
-                if (!query.isEmpty() && filtered.size() == 1) {
-                    String pkg = filtered.get(0)[1];
-                    pendingAutoLaunch = () -> {
-                        if (listView != null && appListView != null && filtered.size() == 1) {
-                            launchApp(pkg);
+                if (!query.isEmpty()) {
+                    String exactPkg = null;
+                    if (filtered.size() == 1) {
+                        exactPkg = filtered.get(0)[1];
+                    } else {
+                        for (String[] app : filtered) {
+                            if (app[0].equalsIgnoreCase(s.toString().trim())) {
+                                exactPkg = app[1];
+                                break;
+                            }
                         }
-                        pendingAutoLaunch = null;
-                    };
-                    listView.postDelayed(pendingAutoLaunch, 300);
+                    }
+                    if (exactPkg != null) {
+                        String pkg = exactPkg;
+                        pendingAutoLaunch = () -> {
+                            if (listView != null && appListView != null) {
+                                launchApp(pkg);
+                            }
+                            pendingAutoLaunch = null;
+                        };
+                        listView.postDelayed(pendingAutoLaunch, 300);
+                    }
                 }
             }
         });
