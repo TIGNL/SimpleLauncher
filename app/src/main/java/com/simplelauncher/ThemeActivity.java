@@ -42,9 +42,12 @@ public class ThemeActivity extends Activity {
                 & Configuration.UI_MODE_NIGHT_MASK;
         boolean currentDark = current == 2 || (current == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
         boolean newDark = theme == 2 || (theme == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
-        if (currentDark == newDark) return;
         prefs.edit().putInt("theme", theme).apply();
-        recreate();
+        if (currentDark != newDark) {
+            recreate();
+        } else {
+            updateUI();
+        }
     }
 
     private void applyTheme() {
