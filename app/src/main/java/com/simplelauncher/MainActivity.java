@@ -80,7 +80,8 @@ public class MainActivity extends Activity {
                             return true;
                         }
                     } else {
-                        if (velocityY > 500 && diffY > 80) {
+                        if (velocityY > 500 && diffY > 80 && listView != null
+                                && listView.getFirstVisiblePosition() == 0) {
                             closeAppList();
                             return true;
                         }
