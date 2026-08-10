@@ -64,18 +64,26 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (appListView == null && e1 != null && e2 != null) {
-                    if (velocityY < -500) {
-                        showAppList();
-                        return true;
-                    } else if (velocityY > 500) {
-                        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                        if (e1.getX() < screenWidth / 2) {
-                            expandNotifications();
-                        } else {
-                            expandQuickSettings();
+                if (e1 != null && e2 != null) {
+                    float diffY = e2.getY() - e1.getY();
+                    if (appListView == null) {
+                        if (velocityY < -500) {
+                            showAppList();
+                            return true;
+                        } else if (velocityY > 500) {
+                            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                            if (e1.getX() < screenWidth / 2) {
+                                expandNotifications();
+                            } else {
+                                expandQuickSettings();
+                            }
+                            return true;
                         }
-                        return true;
+                    } else {
+                        if (velocityY > 500 && diffY > 80) {
+                            closeAppList();
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -240,26 +248,6 @@ public class MainActivity extends Activity {
 
         adapter = new GridAdapter();
         listView.setAdapter(adapter);
-
-        GestureDetector listGesture = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (e1 != null && e2 != null && velocityY > 500 && e2.getY() - e1.getY() > 80) {
-                    closeAppList();
-                    return true;
-                }
-                return false;
-            }
-        });
-        listView.setOnTouchListener((v, event) -> {
-            listGesture.onTouchEvent(event);
-            return false;
-        });
 
         FrameLayout container = findViewById(R.id.container);
         container.addView(appListView);
