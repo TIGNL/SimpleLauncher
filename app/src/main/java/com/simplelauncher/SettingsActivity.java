@@ -26,7 +26,7 @@ public class SettingsActivity extends Activity {
         themeRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Theme");
-            i.putExtra("description", "Choose between Dark, Light, or Follow System theme. Follow System automatically matches your device's system-wide appearance setting.");
+            i.putExtra("description", "Choose how the app looks. You can set it to always use a light appearance, always use a dark appearance, or automatically follow your device's system-wide appearance setting.");
             startActivity(i);
             return true;
         });
@@ -38,7 +38,7 @@ public class SettingsActivity extends Activity {
         permissionsRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Needed Permissions");
-            i.putExtra("description", "This app uses an Accessibility Service to provide quick access to notifications and quick settings via swipe-down gestures on the home screen. The service does not collect or share any data. You can enable or disable it from this page.");
+            i.putExtra("description", "This app needs an Accessibility Service to provide quick access to notifications and quick settings. Swipe down from the left side of the home screen for notifications, or from the right side for quick settings. The service does not collect or share any data.");
             startActivity(i);
             return true;
         });
@@ -50,7 +50,7 @@ public class SettingsActivity extends Activity {
         appDrawerRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "App Drawer");
-            i.putExtra("description", "Customize app drawer behavior. Toggle auto-launch settings: automatically open an app when it's the only match or when the typed name exactly matches an app name.");
+            i.putExtra("description", "Customize how the app drawer behaves when you search for apps. You can choose whether apps open automatically and under what conditions.");
             startActivity(i);
             return true;
         });

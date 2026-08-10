@@ -1,6 +1,7 @@
 package com.simplelauncher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -36,6 +37,22 @@ public class AppDrawerActivity extends Activity {
             boolean current = prefs.getBoolean("auto_launch_exact", true);
             prefs.edit().putBoolean("auto_launch_exact", !current).apply();
             updateUI();
+        });
+
+        findViewById(R.id.autoLaunchSingleRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Auto-launch single match");
+            i.putExtra("description", "When enabled, if your search only matches one app, it will open automatically without needing to tap it. This makes finding and opening apps faster when you know the name.");
+            startActivity(i);
+            return true;
+        });
+
+        findViewById(R.id.autoLaunchExactRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Auto-launch exact name");
+            i.putExtra("description", "When enabled, if the text you type exactly matches an app name, it will open automatically. For example, typing \"Calculator\" will open the Calculator app immediately.");
+            startActivity(i);
+            return true;
         });
     }
 

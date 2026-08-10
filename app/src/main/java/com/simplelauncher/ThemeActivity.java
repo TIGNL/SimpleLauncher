@@ -1,6 +1,7 @@
 package com.simplelauncher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -33,6 +34,30 @@ public class ThemeActivity extends Activity {
         optFollowSystem.setOnClickListener(v -> selectTheme(0));
         optWhite.setOnClickListener(v -> selectTheme(1));
         optDark.setOnClickListener(v -> selectTheme(2));
+
+        optFollowSystem.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Follow system");
+            i.putExtra("description", "Automatically matches your device's system-wide appearance setting. When you change your device between light and dark mode, the app will update to match.");
+            startActivity(i);
+            return true;
+        });
+
+        optWhite.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "White");
+            i.putExtra("description", "Always uses a light appearance with a white background, regardless of your device's system-wide appearance setting.");
+            startActivity(i);
+            return true;
+        });
+
+        optDark.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Dark");
+            i.putExtra("description", "Always uses a dark appearance with a black background, regardless of your device's system-wide appearance setting.");
+            startActivity(i);
+            return true;
+        });
     }
 
     private void selectTheme(int theme) {
