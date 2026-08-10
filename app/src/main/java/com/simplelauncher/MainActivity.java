@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
     private int lastTheme = -1;
     private Runnable pendingAutoLaunch;
     private TextView pageTitle;
+    private boolean keyboardAutoShown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,12 +264,18 @@ public class MainActivity extends Activity {
         }, 200);
 
         listView.setOnScrollListener(new android.widget.AbsListView.OnScrollListener() {
+            private boolean keyboardHidden;
+
             @Override
             public void onScrollStateChanged(android.widget.AbsListView view, int scrollState) {
+                if (appListView == null) return;
                 if (scrollState == SCROLL_STATE_TOUCH_SCROLL || scrollState == SCROLL_STATE_FLING) {
-                    hideKeyboard();
-                    searchInput.clearFocus();
-                } else if (scrollState == SCROLL_STATE_IDLE) {
+                    if (!keyboardHidden) {
+                        hideKeyboard();
+                        searchInput.clearFocus();
+                        keyboardHidden = true;
+                    }
+                } else if (scrollState == SCROLL_STATE_IDLE && keyboardHidden) {
                     int pos = listView.getFirstVisiblePosition();
                     int last = listView.getLastVisiblePosition();
                     int total = listView.getCount() - 1;
@@ -277,11 +284,13 @@ public class MainActivity extends Activity {
                         searchInput.setFocusableInTouchMode(true);
                         searchInput.requestFocus();
                         listView.postDelayed(() -> {
+                            if (appListView == null) return;
                             android.view.inputmethod.InputMethodManager imm =
                                     (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                             if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
                         }, 200);
                     }
+                    keyboardHidden = false;
                 }
             }
 
