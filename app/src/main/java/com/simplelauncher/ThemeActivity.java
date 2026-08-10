@@ -38,7 +38,7 @@ public class ThemeActivity extends Activity {
         optFollowSystem.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Follow system");
-            i.putExtra("description", "Automatically matches your device's system-wide appearance setting. When you change your device between light and dark mode, the app will update to match.");
+            i.putExtra("description", "Automatically matches your device appearance setting.");
             startActivity(i);
             return true;
         });
@@ -46,7 +46,7 @@ public class ThemeActivity extends Activity {
         optWhite.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "White");
-            i.putExtra("description", "Always uses a light appearance with a white background, regardless of your device's system-wide appearance setting.");
+            i.putExtra("description", "Always uses a light appearance.");
             startActivity(i);
             return true;
         });
@@ -54,7 +54,7 @@ public class ThemeActivity extends Activity {
         optDark.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Dark");
-            i.putExtra("description", "Always uses a dark appearance with a black background, regardless of your device's system-wide appearance setting.");
+            i.putExtra("description", "Always uses a dark appearance.");
             startActivity(i);
             return true;
         });

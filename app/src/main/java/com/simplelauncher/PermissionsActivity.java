@@ -28,7 +28,7 @@ public class PermissionsActivity extends Activity {
         findViewById(R.id.accessibilityRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Accessibility Service");
-            i.putExtra("description", "The Accessibility Service allows the app to detect gestures on the home screen for opening notifications and quick settings. Swipe down from the left side for notifications, or from the right side for quick settings. This service only works on the home screen and does not collect or share any data.");
+            i.putExtra("description", "Enables gesture detection for quick access to notifications and quick settings.");
             startActivity(i);
             return true;
         });

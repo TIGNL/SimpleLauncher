@@ -42,7 +42,7 @@ public class AppDrawerActivity extends Activity {
         findViewById(R.id.autoLaunchSingleRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Auto-launch single match");
-            i.putExtra("description", "When enabled, if your search only matches one app, it will open automatically without needing to tap it. This makes finding and opening apps faster when you know the name.");
+            i.putExtra("description", "Opens an app automatically when it is the only search result.");
             startActivity(i);
             return true;
         });
@@ -50,7 +50,7 @@ public class AppDrawerActivity extends Activity {
         findViewById(R.id.autoLaunchExactRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Auto-launch exact name");
-            i.putExtra("description", "When enabled, if the text you type exactly matches an app name, it will open automatically. For example, typing \"Calculator\" will open the Calculator app immediately.");
+            i.putExtra("description", "Opens an app automatically when the search text matches its name exactly.");
             startActivity(i);
             return true;
         });

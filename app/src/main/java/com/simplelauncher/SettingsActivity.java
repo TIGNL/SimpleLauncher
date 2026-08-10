@@ -26,7 +26,7 @@ public class SettingsActivity extends Activity {
         themeRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Theme");
-            i.putExtra("description", "Controls the visual appearance of the app. You can choose between light, dark, or automatic based on your device settings.");
+            i.putExtra("description", "Controls the visual appearance of the app.");
             startActivity(i);
             return true;
         });
@@ -38,7 +38,7 @@ public class SettingsActivity extends Activity {
         permissionsRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Needed Permissions");
-            i.putExtra("description", "Manages app permissions required for core functionality like gestures and notifications.");
+            i.putExtra("description", "Manages permissions required for core functionality.");
             startActivity(i);
             return true;
         });
@@ -50,7 +50,7 @@ public class SettingsActivity extends Activity {
         appDrawerRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "App Drawer");
-            i.putExtra("description", "Configures how apps are displayed and launched from the search interface.");
+            i.putExtra("description", "Configures how apps are displayed and launched.");
             startActivity(i);
             return true;
         });
