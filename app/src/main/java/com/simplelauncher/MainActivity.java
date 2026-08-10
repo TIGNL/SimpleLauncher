@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
     private List<String[]> filtered = new ArrayList<>();
     private int lastTheme = -1;
     private Runnable pendingAutoLaunch;
+    private TextView pageTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +170,9 @@ public class MainActivity extends Activity {
                     }
                 }
                 if (adapter != null) adapter.notifyDataSetChanged();
+                if (pageTitle != null) {
+                    pageTitle.setText("Apps \u2014 " + filtered.size());
+                }
 
                 if (!query.isEmpty()) {
                     String exactPkg = null;
@@ -230,11 +234,32 @@ public class MainActivity extends Activity {
         listView = appListView.findViewById(R.id.appList);
 
         View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
-        ((TextView) titleView.findViewById(R.id.pageTitle)).setText("Apps");
+        pageTitle = titleView.findViewById(R.id.pageTitle);
+        pageTitle.setText("Apps \u2014 " + apps.size());
         listView.addHeaderView(titleView);
 
         adapter = new GridAdapter();
         listView.setAdapter(adapter);
+
+        GestureDetector listGesture = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 != null && e2 != null && velocityY > 500 && e2.getY() - e1.getY() > 80) {
+                    closeAppList();
+                    return true;
+                }
+                return false;
+            }
+        });
+        listView.setOnTouchListener((v, event) -> {
+            listGesture.onTouchEvent(event);
+            return false;
+        });
 
         FrameLayout container = findViewById(R.id.container);
         container.addView(appListView);
