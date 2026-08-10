@@ -64,6 +64,10 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalDensity
@@ -231,6 +235,25 @@ fun LauncherScreen(currentPage: LauncherPage, onPageChange: (LauncherPage) -> Un
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val startX = down.position.x
+                    val startY = down.position.y
+                    val up = waitForUpOrCancellation()
+                    if (up != null) {
+                        val deltaY = up.position.y - startY
+                        if (deltaY > 80f) {
+                            val screenWidth = size.width.toFloat()
+                            if (startX < screenWidth / 2f) {
+                                expandNotifications(context)
+                            } else {
+                                expandQuickSettings(context)
+                            }
+                        }
+                    }
+                }
+            }
     ){
         Image(
             painter = painterResource(R.drawable.glow),
@@ -1185,4 +1208,20 @@ fun MediaItem(mediaData: MediaData, modifier: Modifier = Modifier) {
 fun launchDialer(number: String, context: Context){
     val intent = Intent(Intent.ACTION_DIAL, "tel:$number".toUri())
     context.startActivity(intent)
+}
+
+fun expandNotifications(context: Context) {
+    try {
+        Runtime.getRuntime().exec(arrayOf("cmd", "statusbar", "expand-notifications"))
+    } catch (e: Exception) {
+        Log.e("SimpleLauncher", "Failed to expand notifications", e)
+    }
+}
+
+fun expandQuickSettings(context: Context) {
+    try {
+        Runtime.getRuntime().exec(arrayOf("cmd", "statusbar", "expand-settings"))
+    } catch (e: Exception) {
+        Log.e("SimpleLauncher", "Failed to expand quick settings", e)
+    }
 }
