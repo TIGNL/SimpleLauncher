@@ -165,11 +165,8 @@ public class MainActivity extends Activity {
 
                 if (!query.isEmpty() && filtered.size() == 1) {
                     String pkg = filtered.get(0)[1];
-                    String name = filtered.get(0)[0];
                     pendingAutoLaunch = () -> {
-                        if (listView != null && searchInput != null
-                                && searchInput.getText().toString().trim().equalsIgnoreCase(name)
-                                && appListView != null) {
+                        if (listView != null && appListView != null && filtered.size() == 1) {
                             launchApp(pkg);
                         }
                         pendingAutoLaunch = null;
