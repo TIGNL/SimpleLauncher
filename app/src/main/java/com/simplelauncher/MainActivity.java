@@ -264,38 +264,29 @@ public class MainActivity extends Activity {
         }, 200);
 
         listView.setOnScrollListener(new android.widget.AbsListView.OnScrollListener() {
-            private boolean keyboardHidden;
-
             @Override
             public void onScrollStateChanged(android.widget.AbsListView view, int scrollState) {
-                if (appListView == null) return;
+                if (appListView == null || listView == null) return;
                 if (scrollState == SCROLL_STATE_TOUCH_SCROLL || scrollState == SCROLL_STATE_FLING) {
-                    if (!keyboardHidden) {
-                        hideKeyboard();
-                        searchInput.clearFocus();
-                        keyboardHidden = true;
-                    }
-                } else if (scrollState == SCROLL_STATE_IDLE && keyboardHidden) {
-                    int pos = listView.getFirstVisiblePosition();
-                    int last = listView.getLastVisiblePosition();
-                    int total = listView.getCount() - 1;
-                    if (pos == 0 || last >= total) {
-                        searchInput.setFocusable(true);
-                        searchInput.setFocusableInTouchMode(true);
-                        searchInput.requestFocus();
-                        listView.postDelayed(() -> {
-                            if (appListView == null) return;
-                            android.view.inputmethod.InputMethodManager imm =
-                                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                            if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
-                        }, 200);
-                    }
-                    keyboardHidden = false;
+                    hideKeyboard();
+                    searchInput.clearFocus();
                 }
             }
 
             @Override
             public void onScroll(android.widget.AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+        });
+
+        searchInput.setOnClickListener(v -> {
+            searchInput.setFocusable(true);
+            searchInput.setFocusableInTouchMode(true);
+            searchInput.requestFocus();
+            listView.postDelayed(() -> {
+                if (appListView == null) return;
+                android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+            }, 200);
         });
     }
 
@@ -304,6 +295,9 @@ public class MainActivity extends Activity {
         if (pendingAutoLaunch != null && listView != null) {
             listView.removeCallbacks(pendingAutoLaunch);
             pendingAutoLaunch = null;
+        }
+        if (listView != null) {
+            listView.setOnScrollListener(null);
         }
         hideKeyboard();
         searchInput.setText("");
