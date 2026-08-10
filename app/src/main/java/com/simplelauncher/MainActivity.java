@@ -54,9 +54,19 @@ public class MainActivity extends Activity {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (appListView == null && velocityY < -500) {
-                    showAppList();
-                    return true;
+                if (appListView == null && e1 != null && e2 != null) {
+                    if (velocityY < -500) {
+                        showAppList();
+                        return true;
+                    } else if (velocityY > 500) {
+                        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                        if (e1.getX() < screenWidth / 2) {
+                            expandNotifications();
+                        } else {
+                            expandQuickSettings();
+                        }
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -217,6 +227,20 @@ public class MainActivity extends Activity {
         appListView = null;
         listView = null;
         adapter = null;
+    }
+
+    private void expandNotifications() {
+        LauncherAccessibilityService svc = LauncherAccessibilityService.getInstance();
+        if (svc != null) {
+            svc.openNotifications();
+        }
+    }
+
+    private void expandQuickSettings() {
+        LauncherAccessibilityService svc = LauncherAccessibilityService.getInstance();
+        if (svc != null) {
+            svc.openQuickSettings();
+        }
     }
 
     private void launchApp(String packageName) {

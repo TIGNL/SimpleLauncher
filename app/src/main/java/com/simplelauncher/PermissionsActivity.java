@@ -2,42 +2,43 @@ package com.simplelauncher;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.TextView;
 
-public class SettingsActivity extends Activity {
+public class PermissionsActivity extends Activity {
 
-    private int lastTheme;
+    private TextView accessibilityStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_permissions);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("Settings");
+        ((TextView) findViewById(R.id.pageTitle)).setText("Needed Permissions");
 
-        TextView themeRow = findViewById(R.id.themeRow);
-        themeRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, ThemeActivity.class));
+        accessibilityStatus = findViewById(R.id.accessibilityStatus);
+
+        findViewById(R.id.accessibilityRow).setOnClickListener(v -> {
+            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
         });
-
-        TextView permissionsRow = findViewById(R.id.permissionsRow);
-        permissionsRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, PermissionsActivity.class));
-        });
-
-        lastTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        int currentTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
-        if (lastTheme != currentTheme) {
-            recreate();
+        updateAccessibilityStatus();
+    }
+
+    private void updateAccessibilityStatus() {
+        if (LauncherAccessibilityService.isRunning()) {
+            accessibilityStatus.setText("Enabled");
+            accessibilityStatus.setTextColor(0xFF00AA00);
+        } else {
+            accessibilityStatus.setText("Disabled");
+            accessibilityStatus.setTextColor(0xFFCC0000);
         }
     }
 

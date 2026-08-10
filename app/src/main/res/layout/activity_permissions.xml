@@ -17,16 +17,30 @@
             android:layout_height="@dimen/divider"
             android:background="@drawable/divider_horizontal" />
 
-        <TextView
-            android:id="@+id/themeRow"
+        <LinearLayout
+            android:id="@+id/accessibilityRow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Theme"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Accessibility Service"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/accessibilityStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -34,15 +48,13 @@
             android:background="@drawable/divider_horizontal" />
 
         <TextView
-            android:id="@+id/permissionsRow"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/padding"
-            android:text="Needed Permissions"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:paddingTop="12dp"
+            android:text="Required for swipe down gestures to open notifications and quick settings."
+            android:textColor="@color/text_hint"
+            android:textSize="13sp" />
 
         <View
             android:layout_width="match_parent"
