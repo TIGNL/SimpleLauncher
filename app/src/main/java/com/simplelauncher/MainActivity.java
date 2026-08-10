@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     private List<String[]> apps = new ArrayList<>();
     private List<String[]> filtered = new ArrayList<>();
     private int lastTheme = -1;
+    private Runnable pendingAutoLaunch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +145,11 @@ public class MainActivity extends Activity {
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
+                if (pendingAutoLaunch != null) {
+                    listView.removeCallbacks(pendingAutoLaunch);
+                    pendingAutoLaunch = null;
+                }
+
                 String query = s.toString().trim().toLowerCase();
                 filtered.clear();
                 if (query.isEmpty()) {
@@ -158,14 +164,17 @@ public class MainActivity extends Activity {
                 if (adapter != null) adapter.notifyDataSetChanged();
 
                 if (!query.isEmpty() && filtered.size() == 1) {
-                    listView.postDelayed(() -> launchApp(filtered.get(0)[1]), 300);
-                } else if (!query.isEmpty()) {
-                    for (String[] app : filtered) {
-                        if (app[0].equalsIgnoreCase(s.toString().trim())) {
-                            listView.postDelayed(() -> launchApp(app[1]), 300);
-                            break;
+                    String pkg = filtered.get(0)[1];
+                    String name = filtered.get(0)[0];
+                    pendingAutoLaunch = () -> {
+                        if (listView != null && searchInput != null
+                                && searchInput.getText().toString().trim().equalsIgnoreCase(name)
+                                && appListView != null) {
+                            launchApp(pkg);
                         }
-                    }
+                        pendingAutoLaunch = null;
+                    };
+                    listView.postDelayed(pendingAutoLaunch, 300);
                 }
             }
         });
@@ -223,6 +232,10 @@ public class MainActivity extends Activity {
 
     private void closeAppList() {
         if (appListView == null) return;
+        if (pendingAutoLaunch != null && listView != null) {
+            listView.removeCallbacks(pendingAutoLaunch);
+            pendingAutoLaunch = null;
+        }
         FrameLayout container = findViewById(R.id.container);
         container.removeView(appListView);
         appListView = null;
