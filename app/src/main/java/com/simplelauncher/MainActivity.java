@@ -45,13 +45,20 @@ public class MainActivity extends Activity {
 
         searchInput = findViewById(R.id.searchInput);
 
-        searchInput.setOnClickListener(v -> {
-            if (appListView == null) {
-                showAppList();
-            }
-        });
-
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                if (appListView == null) {
+                    showAppList();
+                }
+                return true;
+            }
+
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (appListView == null && e1 != null && e2 != null) {
@@ -76,12 +83,6 @@ public class MainActivity extends Activity {
                 if (appListView == null) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 }
-            }
-        });
-
-        findViewById(R.id.container).setOnClickListener(v -> {
-            if (appListView == null) {
-                showAppList();
             }
         });
 
