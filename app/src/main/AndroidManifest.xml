@@ -44,6 +44,11 @@
             android:exported="false"
             android:theme="@style/Theme.SimpleLauncher" />
 
+        <activity
+            android:name=".AppDrawerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleLauncher" />
+
         <service
             android:name=".LauncherAccessibilityService"
             android:exported="false"

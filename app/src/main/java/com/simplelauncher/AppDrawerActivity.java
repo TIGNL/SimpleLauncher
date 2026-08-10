@@ -3,48 +3,49 @@ package com.simplelauncher;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
-public class ThemeActivity extends Activity {
+public class AppDrawerActivity extends Activity {
 
     private SharedPreferences prefs;
-    private View optFollowSystem;
-    private View optWhite;
-    private View optDark;
+    private TextView autoLaunchSingleStatus;
+    private TextView autoLaunchExactStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_theme);
+        setContentView(R.layout.activity_app_drawer);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("Theme");
+        ((TextView) findViewById(R.id.pageTitle)).setText("App Drawer");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        optFollowSystem = findViewById(R.id.optFollowSystem);
-        optWhite = findViewById(R.id.optWhite);
-        optDark = findViewById(R.id.optDark);
+        autoLaunchSingleStatus = findViewById(R.id.autoLaunchSingleStatus);
+        autoLaunchExactStatus = findViewById(R.id.autoLaunchExactStatus);
 
         updateUI();
 
-        optFollowSystem.setOnClickListener(v -> selectTheme(0));
-        optWhite.setOnClickListener(v -> selectTheme(1));
-        optDark.setOnClickListener(v -> selectTheme(2));
+        findViewById(R.id.autoLaunchSingleRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("auto_launch_single", true);
+            prefs.edit().putBoolean("auto_launch_single", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.autoLaunchExactRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("auto_launch_exact", true);
+            prefs.edit().putBoolean("auto_launch_exact", !current).apply();
+            updateUI();
+        });
     }
 
-    private void selectTheme(int theme) {
-        int current = prefs.getInt("theme", 0);
-        if (current == theme) return;
-        int systemNight = getApplicationContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-        boolean currentIsDark = current == 2 || (current == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
-        boolean newIsDark = theme == 2 || (theme == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
-        if (currentIsDark == newIsDark) return;
-        prefs.edit().putInt("theme", theme).apply();
-        recreate();
+    private void updateUI() {
+        boolean single = prefs.getBoolean("auto_launch_single", true);
+        boolean exact = prefs.getBoolean("auto_launch_exact", true);
+        autoLaunchSingleStatus.setText(single ? "On" : "Off");
+        autoLaunchSingleStatus.setTextColor(single ? 0xFF00AA00 : 0xFFCC0000);
+        autoLaunchExactStatus.setText(exact ? "On" : "Off");
+        autoLaunchExactStatus.setTextColor(exact ? 0xFF00AA00 : 0xFFCC0000);
     }
 
     private void applyTheme() {
@@ -69,14 +70,5 @@ public class ThemeActivity extends Activity {
         Configuration config = new Configuration(getResources().getConfiguration());
         config.uiMode = (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | nightMode;
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-    }
-
-    private void updateUI() {
-        int theme = prefs.getInt("theme", 0);
-        int selected = Color.parseColor("#80808080");
-        int unselected = Color.TRANSPARENT;
-        optFollowSystem.setBackgroundColor(theme == 0 ? selected : unselected);
-        optWhite.setBackgroundColor(theme == 1 ? selected : unselected);
-        optDark.setBackgroundColor(theme == 2 ? selected : unselected);
     }
 }

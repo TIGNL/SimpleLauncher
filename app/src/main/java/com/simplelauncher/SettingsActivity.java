@@ -29,6 +29,11 @@ public class SettingsActivity extends Activity {
             startActivity(new Intent(this, PermissionsActivity.class));
         });
 
+        TextView appDrawerRow = findViewById(R.id.appDrawerRow);
+        appDrawerRow.setOnClickListener(v -> {
+            startActivity(new Intent(this, AppDrawerActivity.class));
+        });
+
         lastTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
     }
 

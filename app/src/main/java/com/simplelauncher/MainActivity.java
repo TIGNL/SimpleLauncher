@@ -185,10 +185,13 @@ public class MainActivity extends Activity {
                 }
 
                 if (!query.isEmpty()) {
+                    SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+                    boolean autoSingle = prefs.getBoolean("auto_launch_single", true);
+                    boolean autoExact = prefs.getBoolean("auto_launch_exact", true);
                     String exactPkg = null;
-                    if (filtered.size() == 1) {
+                    if (autoSingle && filtered.size() == 1) {
                         exactPkg = filtered.get(0)[1];
-                    } else {
+                    } else if (autoExact) {
                         for (String[] app : filtered) {
                             if (app[0].equalsIgnoreCase(s.toString().trim())) {
                                 exactPkg = app[1];
