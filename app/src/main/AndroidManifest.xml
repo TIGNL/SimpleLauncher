@@ -16,6 +16,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
+            android:excludeFromRecents="true"
             android:resumeWhilePausing="true"
             android:screenOrientation="nosensor"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize"
