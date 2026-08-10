@@ -14,10 +14,20 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("simplelauncher.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "simple123"
+            keyAlias = "simplelauncher"
+            keyPassword = System.getenv("KEYSTORE_PASSWORD") ?: "simple123"
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -26,6 +36,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
