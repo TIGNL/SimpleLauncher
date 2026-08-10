@@ -36,13 +36,7 @@ public class ThemeActivity extends Activity {
     }
 
     private void selectTheme(int theme) {
-        int current = prefs.getInt("theme", 0);
-        if (current == theme) return;
-        int systemNight = getApplicationContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-        boolean currentIsDark = current == 2 || (current == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
-        boolean newIsDark = theme == 2 || (theme == 0 && systemNight == Configuration.UI_MODE_NIGHT_YES);
-        if (currentIsDark == newIsDark) return;
+        if (prefs.getInt("theme", 0) == theme) return;
         prefs.edit().putInt("theme", theme).apply();
         recreate();
     }
