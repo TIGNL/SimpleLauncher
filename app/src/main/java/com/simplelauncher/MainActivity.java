@@ -261,6 +261,33 @@ public class MainActivity extends Activity {
                     (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
         }, 200);
+
+        listView.setOnScrollListener(new android.widget.AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(android.widget.AbsListView view, int scrollState) {
+                if (scrollState == SCROLL_STATE_TOUCH_SCROLL || scrollState == SCROLL_STATE_FLING) {
+                    hideKeyboard();
+                    searchInput.clearFocus();
+                } else if (scrollState == SCROLL_STATE_IDLE) {
+                    int pos = listView.getFirstVisiblePosition();
+                    int last = listView.getLastVisiblePosition();
+                    int total = listView.getCount() - 1;
+                    if (pos == 0 || last >= total) {
+                        searchInput.setFocusable(true);
+                        searchInput.setFocusableInTouchMode(true);
+                        searchInput.requestFocus();
+                        listView.postDelayed(() -> {
+                            android.view.inputmethod.InputMethodManager imm =
+                                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                            if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                        }, 200);
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(android.widget.AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+        });
     }
 
     private void closeAppList() {
