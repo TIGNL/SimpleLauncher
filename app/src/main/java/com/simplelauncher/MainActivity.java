@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         searchInput = findViewById(R.id.searchInput);
+        searchInput.setFocusable(false);
 
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -101,12 +102,18 @@ public class MainActivity extends Activity {
         } else {
             closeAppList();
         }
+        if (appListView == null) {
+            hideKeyboard();
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         closeAppList();
+        if (appListView == null) {
+            hideKeyboard();
+        }
     }
 
     @Override
@@ -232,6 +239,8 @@ public class MainActivity extends Activity {
         FrameLayout container = findViewById(R.id.container);
         container.addView(appListView);
 
+        searchInput.setFocusable(true);
+        searchInput.setFocusableInTouchMode(true);
         searchInput.requestFocus();
         listView.postDelayed(() -> {
             android.view.inputmethod.InputMethodManager imm =
@@ -246,11 +255,22 @@ public class MainActivity extends Activity {
             listView.removeCallbacks(pendingAutoLaunch);
             pendingAutoLaunch = null;
         }
+        hideKeyboard();
+        searchInput.setText("");
+        searchInput.setFocusable(false);
         FrameLayout container = findViewById(R.id.container);
         container.removeView(appListView);
         appListView = null;
         listView = null;
         adapter = null;
+    }
+
+    private void hideKeyboard() {
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null && getCurrentFocus() != null) {
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     private void expandNotifications() {
