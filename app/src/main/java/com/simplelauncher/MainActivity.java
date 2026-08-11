@@ -284,8 +284,11 @@ public class MainActivity extends Activity {
             public void onScrollStateChanged(android.widget.AbsListView view, int scrollState) {
                 if (appListView == null || listView == null) return;
                 if (scrollState == SCROLL_STATE_TOUCH_SCROLL || scrollState == SCROLL_STATE_FLING) {
-                    hideKeyboard();
-                    searchInput.clearFocus();
+                    boolean hideOnScroll = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("hide_keyboard_on_scroll", true);
+                    if (hideOnScroll) {
+                        hideKeyboard();
+                        searchInput.clearFocus();
+                    }
                 }
             }
 

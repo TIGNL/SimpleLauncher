@@ -14,6 +14,7 @@ public class AppDrawerActivity extends Activity {
     private TextView autoLaunchSingleStatus;
     private TextView autoLaunchExactStatus;
     private TextView autoShowKeyboardStatus;
+    private TextView hideKeyboardOnScrollStatus;
     private TextView swipeToCloseStatus;
 
     @Override
@@ -29,6 +30,7 @@ public class AppDrawerActivity extends Activity {
         autoLaunchSingleStatus = findViewById(R.id.autoLaunchSingleStatus);
         autoLaunchExactStatus = findViewById(R.id.autoLaunchExactStatus);
         autoShowKeyboardStatus = findViewById(R.id.autoShowKeyboardStatus);
+        hideKeyboardOnScrollStatus = findViewById(R.id.hideKeyboardOnScrollStatus);
         swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
 
         updateUI();
@@ -55,6 +57,12 @@ public class AppDrawerActivity extends Activity {
         findViewById(R.id.autoShowKeyboardRow).setOnClickListener(v -> {
             boolean current = prefs.getBoolean("auto_show_keyboard", true);
             prefs.edit().putBoolean("auto_show_keyboard", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.hideKeyboardOnScrollRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("hide_keyboard_on_scroll", true);
+            prefs.edit().putBoolean("hide_keyboard_on_scroll", !current).apply();
             updateUI();
         });
 
@@ -96,6 +104,14 @@ public class AppDrawerActivity extends Activity {
             return true;
         });
 
+        findViewById(R.id.hideKeyboardOnScrollRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Hide keyboard on scroll");
+            i.putExtra("description", "Hides the keyboard when scrolling through the app list.");
+            startActivity(i);
+            return true;
+        });
+
         findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Swipe down to close");
@@ -110,6 +126,7 @@ public class AppDrawerActivity extends Activity {
         boolean single = prefs.getBoolean("auto_launch_single", true);
         boolean exact = prefs.getBoolean("auto_launch_exact", true);
         boolean autoKeyboard = prefs.getBoolean("auto_show_keyboard", true);
+        boolean hideOnScroll = prefs.getBoolean("hide_keyboard_on_scroll", true);
         boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
 
         itemsPerRowStatus.setText(String.valueOf(itemsPerRow));
@@ -119,6 +136,8 @@ public class AppDrawerActivity extends Activity {
         autoLaunchExactStatus.setTextColor(exact ? 0xFF00AA00 : 0xFFCC0000);
         autoShowKeyboardStatus.setText(autoKeyboard ? "On" : "Off");
         autoShowKeyboardStatus.setTextColor(autoKeyboard ? 0xFF00AA00 : 0xFFCC0000);
+        hideKeyboardOnScrollStatus.setText(hideOnScroll ? "On" : "Off");
+        hideKeyboardOnScrollStatus.setTextColor(hideOnScroll ? 0xFF00AA00 : 0xFFCC0000);
         swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
         swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
     }
