@@ -15,6 +15,7 @@ public class AppDrawerActivity extends Activity {
     private TextView autoLaunchExactStatus;
     private TextView autoShowKeyboardStatus;
     private TextView hideKeyboardOnScrollStatus;
+    private TextView textAlignmentStatus;
     private TextView swipeToCloseStatus;
 
     @Override
@@ -31,6 +32,7 @@ public class AppDrawerActivity extends Activity {
         autoLaunchExactStatus = findViewById(R.id.autoLaunchExactStatus);
         autoShowKeyboardStatus = findViewById(R.id.autoShowKeyboardStatus);
         hideKeyboardOnScrollStatus = findViewById(R.id.hideKeyboardOnScrollStatus);
+        textAlignmentStatus = findViewById(R.id.textAlignmentStatus);
         swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
 
         updateUI();
@@ -63,6 +65,12 @@ public class AppDrawerActivity extends Activity {
         findViewById(R.id.hideKeyboardOnScrollRow).setOnClickListener(v -> {
             boolean current = prefs.getBoolean("hide_keyboard_on_scroll", true);
             prefs.edit().putBoolean("hide_keyboard_on_scroll", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.textAlignmentRow).setOnClickListener(v -> {
+            String current = prefs.getString("text_alignment", "start");
+            prefs.edit().putString("text_alignment", current.equals("start") ? "center" : "start").apply();
             updateUI();
         });
 
@@ -112,6 +120,14 @@ public class AppDrawerActivity extends Activity {
             return true;
         });
 
+        findViewById(R.id.textAlignmentRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Text alignment");
+            i.putExtra("description", "Sets how app names are aligned in the app drawer.");
+            startActivity(i);
+            return true;
+        });
+
         findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Swipe down to close");
@@ -127,6 +143,7 @@ public class AppDrawerActivity extends Activity {
         boolean exact = prefs.getBoolean("auto_launch_exact", true);
         boolean autoKeyboard = prefs.getBoolean("auto_show_keyboard", true);
         boolean hideOnScroll = prefs.getBoolean("hide_keyboard_on_scroll", true);
+        String alignment = prefs.getString("text_alignment", "start");
         boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
 
         itemsPerRowStatus.setText(String.valueOf(itemsPerRow));
@@ -138,6 +155,7 @@ public class AppDrawerActivity extends Activity {
         autoShowKeyboardStatus.setTextColor(autoKeyboard ? 0xFF00AA00 : 0xFFCC0000);
         hideKeyboardOnScrollStatus.setText(hideOnScroll ? "On" : "Off");
         hideKeyboardOnScrollStatus.setTextColor(hideOnScroll ? 0xFF00AA00 : 0xFFCC0000);
+        textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
         swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
         swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
     }

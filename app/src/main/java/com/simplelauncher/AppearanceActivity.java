@@ -10,7 +10,6 @@ import android.widget.TextView;
 public class AppearanceActivity extends Activity {
 
     private SharedPreferences prefs;
-    private TextView textAlignmentStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,18 +20,9 @@ public class AppearanceActivity extends Activity {
         ((TextView) findViewById(R.id.pageTitle)).setText("Appearance");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        textAlignmentStatus = findViewById(R.id.textAlignmentStatus);
-
-        updateUI();
 
         findViewById(R.id.themeRow).setOnClickListener(v -> {
             startActivity(new Intent(this, ThemeActivity.class));
-        });
-
-        findViewById(R.id.textAlignmentRow).setOnClickListener(v -> {
-            String current = prefs.getString("text_alignment", "start");
-            prefs.edit().putString("text_alignment", current.equals("start") ? "center" : "start").apply();
-            updateUI();
         });
 
         findViewById(R.id.themeRow).setOnLongClickListener(v -> {
@@ -42,19 +32,6 @@ public class AppearanceActivity extends Activity {
             startActivity(i);
             return true;
         });
-
-        findViewById(R.id.textAlignmentRow).setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Text alignment");
-            i.putExtra("description", "Sets how app names are aligned in the app drawer.");
-            startActivity(i);
-            return true;
-        });
-    }
-
-    private void updateUI() {
-        String alignment = prefs.getString("text_alignment", "start");
-        textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
     }
 
     private void applyTheme() {
