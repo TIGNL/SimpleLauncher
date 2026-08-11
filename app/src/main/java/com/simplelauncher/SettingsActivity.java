@@ -36,8 +36,6 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
         ((TextView) findViewById(R.id.pageTitle)).setText("Settings");
 
         TextView appearanceRow = findViewById(R.id.appearanceRow);
@@ -86,6 +84,12 @@ public class SettingsActivity extends Activity {
         if (lastTheme != currentTheme) {
             recreate();
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {

@@ -36,8 +36,6 @@ public class PermissionsActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
         ((TextView) findViewById(R.id.pageTitle)).setText("Needed Permissions");
 
         accessibilityStatus = findViewById(R.id.accessibilityStatus);
@@ -69,6 +67,12 @@ public class PermissionsActivity extends Activity {
             accessibilityStatus.setText("Disabled");
             accessibilityStatus.setTextColor(0xFFCC0000);
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {

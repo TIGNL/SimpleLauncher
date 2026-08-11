@@ -41,8 +41,6 @@ public class ThemeActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
         ((TextView) findViewById(R.id.pageTitle)).setText("Theme");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
@@ -94,6 +92,12 @@ public class ThemeActivity extends Activity {
         } else {
             updateUI();
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {

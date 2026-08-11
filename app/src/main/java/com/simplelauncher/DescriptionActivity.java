@@ -34,13 +34,14 @@ public class DescriptionActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
-        String title = getIntent().getStringExtra("title");
-        String description = getIntent().getStringExtra("description");
-
         ((TextView) findViewById(R.id.pageTitle)).setText(title != null ? title : "Description");
         ((TextView) findViewById(R.id.descriptionText)).setText(description != null ? description : "");
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {

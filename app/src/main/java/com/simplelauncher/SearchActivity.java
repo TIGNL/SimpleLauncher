@@ -40,8 +40,6 @@ public class SearchActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
         ((TextView) findViewById(R.id.pageTitle)).setText("Search");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
@@ -123,6 +121,12 @@ public class SearchActivity extends Activity {
         autoLaunchSingleStatus.setTextColor(single ? 0xFF00AA00 : 0xFFCC0000);
         autoLaunchExactStatus.setText(exact ? "On" : "Off");
         autoLaunchExactStatus.setTextColor(exact ? 0xFF00AA00 : 0xFFCC0000);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {

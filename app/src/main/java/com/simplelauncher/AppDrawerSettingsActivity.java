@@ -38,8 +38,6 @@ public class AppDrawerSettingsActivity extends Activity {
             }
         });
 
-        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
         ((TextView) findViewById(R.id.pageTitle)).setText("App Drawer");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
@@ -83,6 +81,12 @@ public class AppDrawerSettingsActivity extends Activity {
 
         textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
         itemsPerRowStatus.setText(String.valueOf(itemsPerRow));
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     private void goHome() {
