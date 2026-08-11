@@ -34,6 +34,9 @@ public class DescriptionActivity extends Activity {
             }
         });
 
+        String title = getIntent().getStringExtra("title");
+        String description = getIntent().getStringExtra("description");
+
         ((TextView) findViewById(R.id.pageTitle)).setText(title != null ? title : "Description");
         ((TextView) findViewById(R.id.descriptionText)).setText(description != null ? description : "");
     }
