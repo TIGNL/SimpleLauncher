@@ -56,7 +56,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/padding"
-            android:text="App Drawer"
+            android:text="App Drawer and Search"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
 

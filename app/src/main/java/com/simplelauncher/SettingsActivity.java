@@ -49,8 +49,8 @@ public class SettingsActivity extends Activity {
         });
         appDrawerRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "App Drawer");
-            i.putExtra("description", "Configures how apps are displayed and launched.");
+            i.putExtra("title", "App Drawer and Search");
+            i.putExtra("description", "Configures the app drawer and search behavior.");
             startActivity(i);
             return true;
         });

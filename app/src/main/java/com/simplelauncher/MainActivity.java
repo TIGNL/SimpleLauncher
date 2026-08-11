@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
     private Runnable pendingAutoLaunch;
     private TextView pageTitle;
     private boolean keyboardAutoShown;
+    private int itemsPerRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,8 @@ public class MainActivity extends Activity {
                             return true;
                         }
                     } else {
-                        if (velocityY > 500 && diffY > 80 && listView != null
+                        boolean swipeClose = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("swipe_to_close", true);
+                        if (swipeClose && velocityY > 500 && diffY > 80 && listView != null
                                 && listView.getFirstVisiblePosition() == 0) {
                             closeAppList();
                             return true;
@@ -181,7 +183,12 @@ public class MainActivity extends Activity {
                 }
                 if (adapter != null) adapter.notifyDataSetChanged();
                 if (pageTitle != null) {
-                    pageTitle.setText("Apps \u2014 " + filtered.size());
+                    boolean showCount = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("show_app_count", true);
+                    if (showCount) {
+                        pageTitle.setText("Apps \u2014 " + filtered.size());
+                    } else {
+                        pageTitle.setText("Apps");
+                    }
                 }
 
                 if (!query.isEmpty()) {
@@ -238,6 +245,7 @@ public class MainActivity extends Activity {
         Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
         filtered.clear();
         filtered.addAll(apps);
+        itemsPerRow = getSharedPreferences("settings", MODE_PRIVATE).getInt("items_per_row", 2);
     }
 
     private void showAppList() {
@@ -246,9 +254,18 @@ public class MainActivity extends Activity {
         appListView = getLayoutInflater().inflate(R.layout.activity_applist, null);
         listView = appListView.findViewById(R.id.appList);
 
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        itemsPerRow = prefs.getInt("items_per_row", 2);
+        boolean showCount = prefs.getBoolean("show_app_count", true);
+        boolean autoKeyboard = prefs.getBoolean("auto_show_keyboard", true);
+
         View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
         pageTitle = titleView.findViewById(R.id.pageTitle);
-        pageTitle.setText("Apps \u2014 " + apps.size());
+        if (showCount) {
+            pageTitle.setText("Apps \u2014 " + apps.size());
+        } else {
+            pageTitle.setText("Apps");
+        }
         listView.addHeaderView(titleView);
 
         adapter = new GridAdapter();
@@ -260,11 +277,13 @@ public class MainActivity extends Activity {
         searchInput.setFocusable(true);
         searchInput.setFocusableInTouchMode(true);
         searchInput.requestFocus();
-        listView.postDelayed(() -> {
-            android.view.inputmethod.InputMethodManager imm =
-                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
-        }, 200);
+        if (autoKeyboard) {
+            listView.postDelayed(() -> {
+                android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(searchInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+            }, 200);
+        }
 
         listView.setOnScrollListener(new android.widget.AbsListView.OnScrollListener() {
             @Override
@@ -361,6 +380,9 @@ public class MainActivity extends Activity {
     private class GridAdapter extends BaseAdapter {
         @Override
         public int getCount() {
+            if (itemsPerRow == 1) {
+                return filtered.size();
+            }
             return (filtered.size() + 1) / 2;
         }
 
@@ -376,8 +398,32 @@ public class MainActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            if (itemsPerRow == 1) {
+                return getSingleRow(position, convertView, parent);
+            }
+            return getDoubleRow(position, convertView, parent);
+        }
+
+        private View getSingleRow(int position, View convertView, ViewGroup parent) {
+            if (convertView == null || convertView.findViewById(R.id.appName) == null) {
+                convertView = LayoutInflater.from(MainActivity.this)
+                        .inflate(R.layout.item_app_single, parent, false);
+            }
+            TextView appName = convertView.findViewById(R.id.appName);
+            if (position < filtered.size()) {
+                appName.setText(filtered.get(position)[0]);
+                convertView.setOnClickListener(v -> launchApp(filtered.get(position)[1]));
+                convertView.setOnLongClickListener(v -> {
+                    openAppInfo(filtered.get(position)[1]);
+                    return true;
+                });
+            }
+            return convertView;
+        }
+
+        private View getDoubleRow(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if (convertView == null) {
+            if (convertView == null || convertView.findViewById(R.id.leftBox) == null) {
                 convertView = LayoutInflater.from(MainActivity.this)
                         .inflate(R.layout.item_app_row, parent, false);
                 holder = new ViewHolder();

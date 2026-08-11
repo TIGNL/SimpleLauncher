@@ -10,8 +10,12 @@ import android.widget.TextView;
 public class AppDrawerActivity extends Activity {
 
     private SharedPreferences prefs;
+    private TextView itemsPerRowStatus;
     private TextView autoLaunchSingleStatus;
     private TextView autoLaunchExactStatus;
+    private TextView showAppCountStatus;
+    private TextView autoShowKeyboardStatus;
+    private TextView swipeToCloseStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,13 +23,23 @@ public class AppDrawerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_drawer);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("App Drawer");
+        ((TextView) findViewById(R.id.pageTitle)).setText("App Drawer and Search");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        itemsPerRowStatus = findViewById(R.id.itemsPerRowStatus);
         autoLaunchSingleStatus = findViewById(R.id.autoLaunchSingleStatus);
         autoLaunchExactStatus = findViewById(R.id.autoLaunchExactStatus);
+        showAppCountStatus = findViewById(R.id.showAppCountStatus);
+        autoShowKeyboardStatus = findViewById(R.id.autoShowKeyboardStatus);
+        swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
 
         updateUI();
+
+        findViewById(R.id.itemsPerRowRow).setOnClickListener(v -> {
+            int current = prefs.getInt("items_per_row", 2);
+            prefs.edit().putInt("items_per_row", current == 1 ? 2 : 1).apply();
+            updateUI();
+        });
 
         findViewById(R.id.autoLaunchSingleRow).setOnClickListener(v -> {
             boolean current = prefs.getBoolean("auto_launch_single", true);
@@ -37,6 +51,32 @@ public class AppDrawerActivity extends Activity {
             boolean current = prefs.getBoolean("auto_launch_exact", true);
             prefs.edit().putBoolean("auto_launch_exact", !current).apply();
             updateUI();
+        });
+
+        findViewById(R.id.showAppCountRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("show_app_count", true);
+            prefs.edit().putBoolean("show_app_count", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.autoShowKeyboardRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("auto_show_keyboard", true);
+            prefs.edit().putBoolean("auto_show_keyboard", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.swipeToCloseRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("swipe_to_close", true);
+            prefs.edit().putBoolean("swipe_to_close", !current).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.itemsPerRowRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Items per row");
+            i.putExtra("description", "Sets how many apps to display per row in the app drawer.");
+            startActivity(i);
+            return true;
         });
 
         findViewById(R.id.autoLaunchSingleRow).setOnLongClickListener(v -> {
@@ -54,15 +94,51 @@ public class AppDrawerActivity extends Activity {
             startActivity(i);
             return true;
         });
+
+        findViewById(R.id.showAppCountRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Show app count");
+            i.putExtra("description", "Displays the total number of apps in the drawer header.");
+            startActivity(i);
+            return true;
+        });
+
+        findViewById(R.id.autoShowKeyboardRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Auto-show keyboard");
+            i.putExtra("description", "Automatically shows the keyboard when the app drawer opens.");
+            startActivity(i);
+            return true;
+        });
+
+        findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Swipe down to close");
+            i.putExtra("description", "Allows closing the app drawer by swiping down from the top.");
+            startActivity(i);
+            return true;
+        });
     }
 
     private void updateUI() {
+        int itemsPerRow = prefs.getInt("items_per_row", 2);
         boolean single = prefs.getBoolean("auto_launch_single", true);
         boolean exact = prefs.getBoolean("auto_launch_exact", true);
+        boolean showCount = prefs.getBoolean("show_app_count", true);
+        boolean autoKeyboard = prefs.getBoolean("auto_show_keyboard", true);
+        boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
+
+        itemsPerRowStatus.setText(itemsPerRow == 1 ? "1" : "2");
         autoLaunchSingleStatus.setText(single ? "On" : "Off");
         autoLaunchSingleStatus.setTextColor(single ? 0xFF00AA00 : 0xFFCC0000);
         autoLaunchExactStatus.setText(exact ? "On" : "Off");
         autoLaunchExactStatus.setTextColor(exact ? 0xFF00AA00 : 0xFFCC0000);
+        showAppCountStatus.setText(showCount ? "On" : "Off");
+        showAppCountStatus.setTextColor(showCount ? 0xFF00AA00 : 0xFFCC0000);
+        autoShowKeyboardStatus.setText(autoKeyboard ? "On" : "Off");
+        autoShowKeyboardStatus.setTextColor(autoKeyboard ? 0xFF00AA00 : 0xFFCC0000);
+        swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
+        swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
     }
 
     private void applyTheme() {
