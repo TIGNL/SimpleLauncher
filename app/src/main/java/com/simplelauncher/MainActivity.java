@@ -447,6 +447,14 @@ public class MainActivity extends Activity {
             int[] nameIds = {R.id.name1, R.id.name2, R.id.name3, R.id.name4};
             int[] divIds = {R.id.div1, R.id.div2, R.id.div3};
 
+            int lastFilledIndex = -1;
+            for (int i = 0; i < itemsPerRow; i++) {
+                int appIndex = start + i;
+                if (appIndex < filtered.size()) {
+                    lastFilledIndex = i;
+                }
+            }
+
             for (int i = 0; i < itemsPerRow; i++) {
                 FrameLayout cell = convertView.findViewById(cellIds[i]);
                 TextView name = convertView.findViewById(nameIds[i]);
@@ -468,7 +476,7 @@ public class MainActivity extends Activity {
                 }
                 if (i < itemsPerRow - 1) {
                     View div = convertView.findViewById(divIds[i]);
-                    div.setVisibility(View.VISIBLE);
+                    div.setVisibility(i == lastFilledIndex ? View.VISIBLE : View.GONE);
                 }
             }
 
