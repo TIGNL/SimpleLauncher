@@ -39,8 +39,7 @@ public class AppDrawerActivity extends Activity {
 
         findViewById(R.id.itemsPerRowRow).setOnClickListener(v -> {
             int current = prefs.getInt("items_per_row", 2);
-            int next = current >= 4 ? 1 : current + 1;
-            prefs.edit().putInt("items_per_row", next).apply();
+            prefs.edit().putInt("items_per_row", current == 1 ? 2 : 1).apply();
             updateUI();
         });
 
