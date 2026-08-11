@@ -387,7 +387,7 @@ public class MainActivity extends Activity {
             if (itemsPerRow == 1) {
                 return filtered.size();
             }
-            return (filtered.size() + itemsPerRow - 1) / itemsPerRow;
+            return (filtered.size() + 1) / 2;
         }
 
         @Override
@@ -439,48 +439,53 @@ public class MainActivity extends Activity {
         private View getMultiRow(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(MainActivity.this)
-                        .inflate(getLayoutForCount(), parent, false);
+                        .inflate(R.layout.item_app_row_2, parent, false);
             }
 
-            int start = position * itemsPerRow;
-            int[] cellIds = {R.id.cell1, R.id.cell2, R.id.cell3, R.id.cell4};
-            int[] nameIds = {R.id.name1, R.id.name2, R.id.name3, R.id.name4};
-            int[] divIds = {R.id.div1, R.id.div2, R.id.div3};
+            int start = position * 2;
+            FrameLayout cell1 = convertView.findViewById(R.id.cell1);
+            FrameLayout cell2 = convertView.findViewById(R.id.cell2);
+            TextView name1 = convertView.findViewById(R.id.name1);
+            TextView name2 = convertView.findViewById(R.id.name2);
+            View div1 = convertView.findViewById(R.id.div1);
 
-            for (int i = 0; i < itemsPerRow; i++) {
-                FrameLayout cell = convertView.findViewById(cellIds[i]);
-                TextView name = convertView.findViewById(nameIds[i]);
-                name.setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
-                int appIndex = start + i;
-                if (appIndex < filtered.size()) {
-                    cell.setVisibility(View.VISIBLE);
-                    name.setText(filtered.get(appIndex)[0]);
-                    final int idx = appIndex;
-                    cell.setOnClickListener(v -> launchApp(filtered.get(idx)[1]));
-                    cell.setOnLongClickListener(v -> {
-                        openAppInfo(filtered.get(idx)[1]);
-                        return true;
-                    });
-                } else {
-                    cell.setVisibility(View.INVISIBLE);
-                    cell.setOnClickListener(null);
-                    cell.setOnLongClickListener(null);
-                }
-                if (i < itemsPerRow - 1) {
-                    View div = convertView.findViewById(divIds[i]);
-                    boolean hasItem = appIndex < filtered.size();
-                    div.setVisibility(hasItem ? View.VISIBLE : View.GONE);
-                }
+            name1.setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
+            name2.setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
+
+            int idx1 = start;
+            int idx2 = start + 1;
+
+            if (idx1 < filtered.size()) {
+                cell1.setVisibility(View.VISIBLE);
+                name1.setText(filtered.get(idx1)[0]);
+                cell1.setOnClickListener(v -> launchApp(filtered.get(idx1)[1]));
+                cell1.setOnLongClickListener(v -> {
+                    openAppInfo(filtered.get(idx1)[1]);
+                    return true;
+                });
+            } else {
+                cell1.setVisibility(View.INVISIBLE);
+                cell1.setOnClickListener(null);
+                cell1.setOnLongClickListener(null);
+            }
+
+            if (idx2 < filtered.size()) {
+                cell2.setVisibility(View.VISIBLE);
+                name2.setText(filtered.get(idx2)[0]);
+                cell2.setOnClickListener(v -> launchApp(filtered.get(idx2)[1]));
+                cell2.setOnLongClickListener(v -> {
+                    openAppInfo(filtered.get(idx2)[1]);
+                    return true;
+                });
+                div1.setVisibility(View.VISIBLE);
+            } else {
+                cell2.setVisibility(View.INVISIBLE);
+                cell2.setOnClickListener(null);
+                cell2.setOnLongClickListener(null);
+                div1.setVisibility(View.GONE);
             }
 
             return convertView;
-        }
-
-        private int getLayoutForCount() {
-            switch (itemsPerRow) {
-                case 2: return R.layout.item_app_row_2;
-                default: return R.layout.item_app_row_2;
-            }
         }
     }
 }
