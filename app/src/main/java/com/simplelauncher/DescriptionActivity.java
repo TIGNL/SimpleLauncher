@@ -1,11 +1,16 @@
 package com.simplelauncher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 public class DescriptionActivity extends Activity {
+
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,11 +18,36 @@ public class DescriptionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
 
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 != null && e2 != null && velocityY > 500 && (e2.getY() - e1.getY()) > 80) {
+                    goHome();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
         String title = getIntent().getStringExtra("title");
         String description = getIntent().getStringExtra("description");
 
         ((TextView) findViewById(R.id.pageTitle)).setText(title != null ? title : "Description");
         ((TextView) findViewById(R.id.descriptionText)).setText(description != null ? description : "");
+    }
+
+    private void goHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void applyTheme() {

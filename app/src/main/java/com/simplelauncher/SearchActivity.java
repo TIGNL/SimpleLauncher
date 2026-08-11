@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 public class SearchActivity extends Activity {
@@ -14,12 +16,31 @@ public class SearchActivity extends Activity {
     private TextView hideKeyboardOnScrollStatus;
     private TextView autoLaunchSingleStatus;
     private TextView autoLaunchExactStatus;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 != null && e2 != null && velocityY > 500 && (e2.getY() - e1.getY()) > 80) {
+                    goHome();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        findViewById(android.R.id.content).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         ((TextView) findViewById(R.id.pageTitle)).setText("Search");
 
@@ -102,6 +123,13 @@ public class SearchActivity extends Activity {
         autoLaunchSingleStatus.setTextColor(single ? 0xFF00AA00 : 0xFFCC0000);
         autoLaunchExactStatus.setText(exact ? "On" : "Off");
         autoLaunchExactStatus.setTextColor(exact ? 0xFF00AA00 : 0xFFCC0000);
+    }
+
+    private void goHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void applyTheme() {
