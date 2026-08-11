@@ -50,6 +50,11 @@
             android:theme="@style/Theme.SimpleLauncher" />
 
         <activity
+            android:name=".SearchActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleLauncher" />
+
+        <activity
             android:name=".DescriptionActivity"
             android:exported="false"
             android:theme="@style/Theme.SimpleLauncher" />

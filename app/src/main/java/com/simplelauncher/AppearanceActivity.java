@@ -10,6 +10,9 @@ import android.widget.TextView;
 public class AppearanceActivity extends Activity {
 
     private SharedPreferences prefs;
+    private TextView textAlignmentStatus;
+    private TextView itemsPerRowStatus;
+    private TextView swipeToCloseStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +20,35 @@ public class AppearanceActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appearance);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("Appearance");
+        ((TextView) findViewById(R.id.pageTitle)).setText("UI and Appearance");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        textAlignmentStatus = findViewById(R.id.textAlignmentStatus);
+        itemsPerRowStatus = findViewById(R.id.itemsPerRowStatus);
+        swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
+
+        updateUI();
 
         findViewById(R.id.themeRow).setOnClickListener(v -> {
             startActivity(new Intent(this, ThemeActivity.class));
+        });
+
+        findViewById(R.id.textAlignmentRow).setOnClickListener(v -> {
+            String current = prefs.getString("text_alignment", "start");
+            prefs.edit().putString("text_alignment", current.equals("start") ? "center" : "start").apply();
+            updateUI();
+        });
+
+        findViewById(R.id.itemsPerRowRow).setOnClickListener(v -> {
+            int current = prefs.getInt("items_per_row", 2);
+            prefs.edit().putInt("items_per_row", current == 1 ? 2 : 1).apply();
+            updateUI();
+        });
+
+        findViewById(R.id.swipeToCloseRow).setOnClickListener(v -> {
+            boolean current = prefs.getBoolean("swipe_to_close", true);
+            prefs.edit().putBoolean("swipe_to_close", !current).apply();
+            updateUI();
         });
 
         findViewById(R.id.themeRow).setOnLongClickListener(v -> {
@@ -32,6 +58,41 @@ public class AppearanceActivity extends Activity {
             startActivity(i);
             return true;
         });
+
+        findViewById(R.id.textAlignmentRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Text alignment");
+            i.putExtra("description", "Sets how app names are aligned in the app drawer.");
+            startActivity(i);
+            return true;
+        });
+
+        findViewById(R.id.itemsPerRowRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Items per row");
+            i.putExtra("description", "Sets how many apps to display per row in the app drawer.");
+            startActivity(i);
+            return true;
+        });
+
+        findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Swipe down to close");
+            i.putExtra("description", "Allows closing the app drawer by swiping down from the top.");
+            startActivity(i);
+            return true;
+        });
+    }
+
+    private void updateUI() {
+        String alignment = prefs.getString("text_alignment", "start");
+        int itemsPerRow = prefs.getInt("items_per_row", 2);
+        boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
+
+        textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
+        itemsPerRowStatus.setText(String.valueOf(itemsPerRow));
+        swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
+        swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
     }
 
     private void applyTheme() {

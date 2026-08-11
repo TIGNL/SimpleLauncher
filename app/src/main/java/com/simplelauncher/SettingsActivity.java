@@ -25,8 +25,20 @@ public class SettingsActivity extends Activity {
         });
         appearanceRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Appearance");
-            i.putExtra("description", "Controls the visual appearance of the app.");
+            i.putExtra("title", "UI and Appearance");
+            i.putExtra("description", "Controls the visual appearance and UI behavior of the app.");
+            startActivity(i);
+            return true;
+        });
+
+        TextView searchRow = findViewById(R.id.searchRow);
+        searchRow.setOnClickListener(v -> {
+            startActivity(new Intent(this, SearchActivity.class));
+        });
+        searchRow.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Search");
+            i.putExtra("description", "Configures search behavior and keyboard settings.");
             startActivity(i);
             return true;
         });
@@ -39,18 +51,6 @@ public class SettingsActivity extends Activity {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Needed Permissions");
             i.putExtra("description", "Manages permissions required for core functionality.");
-            startActivity(i);
-            return true;
-        });
-
-        TextView appDrawerRow = findViewById(R.id.appDrawerRow);
-        appDrawerRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, AppDrawerActivity.class));
-        });
-        appDrawerRow.setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "App Drawer and Search");
-            i.putExtra("description", "Configures the app drawer and search behavior.");
             startActivity(i);
             return true;
         });
