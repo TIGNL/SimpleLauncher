@@ -479,8 +479,6 @@ public class MainActivity extends Activity {
         private int getLayoutForCount() {
             switch (itemsPerRow) {
                 case 2: return R.layout.item_app_row_2;
-                case 3: return R.layout.item_app_row_3;
-                case 4: return R.layout.item_app_row_4;
                 default: return R.layout.item_app_row_2;
             }
         }
