@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -38,8 +39,8 @@ public class MainActivity extends Activity {
     private int lastTheme = -1;
     private Runnable pendingAutoLaunch;
     private TextView pageTitle;
-    private boolean keyboardAutoShown;
     private int itemsPerRow;
+    private String textAlignment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,12 +184,7 @@ public class MainActivity extends Activity {
                 }
                 if (adapter != null) adapter.notifyDataSetChanged();
                 if (pageTitle != null) {
-                    boolean showCount = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("show_app_count", true);
-                    if (showCount) {
-                        pageTitle.setText("Apps \u2014 " + filtered.size());
-                    } else {
-                        pageTitle.setText("Apps");
-                    }
+                    pageTitle.setText("Apps");
                 }
 
                 if (!query.isEmpty()) {
@@ -245,7 +241,9 @@ public class MainActivity extends Activity {
         Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
         filtered.clear();
         filtered.addAll(apps);
-        itemsPerRow = getSharedPreferences("settings", MODE_PRIVATE).getInt("items_per_row", 2);
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        itemsPerRow = prefs.getInt("items_per_row", 2);
+        textAlignment = prefs.getString("text_alignment", "start");
     }
 
     private void showAppList() {
@@ -256,16 +254,12 @@ public class MainActivity extends Activity {
 
         SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
         itemsPerRow = prefs.getInt("items_per_row", 2);
-        boolean showCount = prefs.getBoolean("show_app_count", true);
+        textAlignment = prefs.getString("text_alignment", "start");
         boolean autoKeyboard = prefs.getBoolean("auto_show_keyboard", true);
 
         View titleView = getLayoutInflater().inflate(R.layout.item_page_title, listView, false);
         pageTitle = titleView.findViewById(R.id.pageTitle);
-        if (showCount) {
-            pageTitle.setText("Apps \u2014 " + apps.size());
-        } else {
-            pageTitle.setText("Apps");
-        }
+        pageTitle.setText("Apps");
         listView.addHeaderView(titleView);
 
         adapter = new GridAdapter();
@@ -377,13 +371,17 @@ public class MainActivity extends Activity {
         }
     }
 
+    private int getTextGravity() {
+        return textAlignment.equals("center") ? Gravity.CENTER : Gravity.START;
+    }
+
     private class GridAdapter extends BaseAdapter {
         @Override
         public int getCount() {
             if (itemsPerRow == 1) {
                 return filtered.size();
             }
-            return (filtered.size() + 1) / 2;
+            return (filtered.size() + itemsPerRow - 1) / itemsPerRow;
         }
 
         @Override
@@ -401,7 +399,7 @@ public class MainActivity extends Activity {
             if (itemsPerRow == 1) {
                 return getSingleRow(position, convertView, parent);
             }
-            return getDoubleRow(position, convertView, parent);
+            return getMultiRow(position, convertView, parent);
         }
 
         private View getSingleRow(int position, View convertView, ViewGroup parent) {
@@ -410,6 +408,7 @@ public class MainActivity extends Activity {
                         .inflate(R.layout.item_app_single, parent, false);
             }
             TextView appName = convertView.findViewById(R.id.appName);
+            appName.setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
             if (position < filtered.size()) {
                 appName.setText(filtered.get(position)[0]);
                 convertView.setOnClickListener(v -> launchApp(filtered.get(position)[1]));
@@ -421,70 +420,109 @@ public class MainActivity extends Activity {
             return convertView;
         }
 
-        private View getDoubleRow(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null || convertView.findViewById(R.id.leftBox) == null) {
-                convertView = LayoutInflater.from(MainActivity.this)
-                        .inflate(R.layout.item_app_row, parent, false);
-                holder = new ViewHolder();
-                holder.leftBox = convertView.findViewById(R.id.leftBox);
-                holder.leftName = convertView.findViewById(R.id.leftName);
-                holder.divider = convertView.findViewById(R.id.divider);
-                holder.rightBox = convertView.findViewById(R.id.rightBox);
-                holder.rightName = convertView.findViewById(R.id.rightName);
+        private View getMultiRow(int position, View convertView, ViewGroup parent) {
+            MultiRowHolder holder;
+            if (convertView == null || !(convertView.getTag() instanceof MultiRowHolder)) {
+                convertView = createMultiRow(parent);
+                holder = new MultiRowHolder();
+                holder.boxes = new FrameLayout[itemsPerRow];
+                holder.names = new TextView[itemsPerRow];
+                holder.dividers = new View[itemsPerRow - 1];
+                for (int i = 0; i < itemsPerRow; i++) {
+                    holder.boxes[i] = convertView.findViewById(getIdForIndex(i, "box"));
+                    holder.names[i] = convertView.findViewById(getIdForIndex(i, "name"));
+                    holder.names[i].setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
+                    if (i < itemsPerRow - 1) {
+                        holder.dividers[i] = convertView.findViewById(getIdForIndex(i, "divider"));
+                    }
+                }
                 convertView.setTag(holder);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                holder = (MultiRowHolder) convertView.getTag();
+                for (int i = 0; i < itemsPerRow; i++) {
+                    holder.names[i].setGravity(getTextGravity() | Gravity.CENTER_VERTICAL);
+                }
             }
 
-            int leftPos = position * 2;
-            int rightPos = position * 2 + 1;
-
-            if (leftPos < filtered.size()) {
-                holder.leftBox.setVisibility(View.VISIBLE);
-                holder.leftName.setText(filtered.get(leftPos)[0]);
-                holder.leftBox.setOnClickListener(v -> launchApp(filtered.get(leftPos)[1]));
-                holder.leftBox.setOnLongClickListener(v -> {
-                    openAppInfo(filtered.get(leftPos)[1]);
-                    return true;
-                });
-            } else {
-                holder.leftBox.setVisibility(View.INVISIBLE);
-                holder.leftBox.setOnClickListener(null);
-                holder.leftBox.setOnLongClickListener(null);
-            }
-
-            if (rightPos < filtered.size()) {
-                holder.divider.setVisibility(View.VISIBLE);
-                holder.rightBox.setVisibility(View.VISIBLE);
-                ViewGroup.LayoutParams leftParams = holder.leftBox.getLayoutParams();
-                leftParams.width = 0;
-                ((LinearLayout.LayoutParams) leftParams).weight = 1;
-                holder.rightName.setText(filtered.get(rightPos)[0]);
-                holder.rightBox.setOnClickListener(v -> launchApp(filtered.get(rightPos)[1]));
-                holder.rightBox.setOnLongClickListener(v -> {
-                    openAppInfo(filtered.get(rightPos)[1]);
-                    return true;
-                });
-            } else {
-                holder.divider.setVisibility(View.GONE);
-                holder.rightBox.setVisibility(View.GONE);
-                ViewGroup.LayoutParams leftParams = holder.leftBox.getLayoutParams();
-                leftParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                ((LinearLayout.LayoutParams) leftParams).weight = 0;
-                holder.rightBox.setOnClickListener(null);
-                holder.rightBox.setOnLongClickListener(null);
+            int startIndex = position * itemsPerRow;
+            for (int i = 0; i < itemsPerRow; i++) {
+                int appIndex = startIndex + i;
+                if (appIndex < filtered.size()) {
+                    holder.boxes[i].setVisibility(View.VISIBLE);
+                    holder.names[i].setText(filtered.get(appIndex)[0]);
+                    final int idx = appIndex;
+                    holder.boxes[i].setOnClickListener(v -> launchApp(filtered.get(idx)[1]));
+                    holder.boxes[i].setOnLongClickListener(v -> {
+                        openAppInfo(filtered.get(idx)[1]);
+                        return true;
+                    });
+                } else {
+                    holder.boxes[i].setVisibility(View.INVISIBLE);
+                    holder.boxes[i].setOnClickListener(null);
+                    holder.boxes[i].setOnLongClickListener(null);
+                }
+                if (i < itemsPerRow - 1) {
+                    boolean showDivider = appIndex < filtered.size() && (appIndex + 1) < filtered.size();
+                    holder.dividers[i].setVisibility(showDivider ? View.VISIBLE : View.GONE);
+                }
             }
 
             return convertView;
         }
 
-        class ViewHolder {
-            View leftBox;
-            TextView leftName;
-            View divider;
-            View rightBox;
-            TextView rightName;
+        private View createMultiRow(ViewGroup parent) {
+            LinearLayout row = new LinearLayout(MainActivity.this);
+            row.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.row_height)));
+            row.setOrientation(LinearLayout.HORIZONTAL);
+
+            for (int i = 0; i < itemsPerRow; i++) {
+                FrameLayout box = new FrameLayout(MainActivity.this);
+                box.setId(getIdForIndex(i, "box"));
+                LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1);
+                box.setLayoutParams(boxParams);
+                box.setBackgroundResource(android.R.attr.selectableItemBackground);
+
+                TextView name = new TextView(MainActivity.this);
+                name.setId(getIdForIndex(i, "name"));
+                FrameLayout.LayoutParams nameParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.content_height));
+                nameParams.gravity = Gravity.CENTER_VERTICAL;
+                name.setLayoutParams(nameParams);
+                name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                name.setMaxLines(1);
+                name.setPadding(getResources().getDimensionPixelSize(R.dimen.padding), 0, getResources().getDimensionPixelSize(R.dimen.padding), 0);
+                name.setTextColor(getResources().getColor(R.color.text_primary));
+                name.setTextSize(14);
+
+                box.addView(name);
+                row.addView(box);
+
+                if (i < itemsPerRow - 1) {
+                    View divider = new View(MainActivity.this);
+                    divider.setId(getIdForIndex(i, "divider"));
+                    LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.divider), ViewGroup.LayoutParams.MATCH_PARENT);
+                    divider.setLayoutParams(dividerParams);
+                    divider.setBackgroundResource(R.drawable.divider_vertical);
+                    row.addView(divider);
+                }
+            }
+
+            return row;
+        }
+
+        private int getIdForIndex(int index, String type) {
+            int base = 1000 + index * 10;
+            switch (type) {
+                case "box": return base;
+                case "name": return base + 1;
+                case "divider": return base + 2;
+                default: return base;
+            }
+        }
+
+        class MultiRowHolder {
+            FrameLayout[] boxes;
+            TextView[] names;
+            View[] dividers;
         }
     }
 }

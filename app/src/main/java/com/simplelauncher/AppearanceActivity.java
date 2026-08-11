@@ -7,64 +7,54 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class SettingsActivity extends Activity {
+public class AppearanceActivity extends Activity {
 
-    private int lastTheme;
+    private SharedPreferences prefs;
+    private TextView textAlignmentStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_appearance);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("Settings");
+        ((TextView) findViewById(R.id.pageTitle)).setText("Appearance");
 
-        TextView appearanceRow = findViewById(R.id.appearanceRow);
-        appearanceRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, AppearanceActivity.class));
+        prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        textAlignmentStatus = findViewById(R.id.textAlignmentStatus);
+
+        updateUI();
+
+        findViewById(R.id.themeRow).setOnClickListener(v -> {
+            startActivity(new Intent(this, ThemeActivity.class));
         });
-        appearanceRow.setOnLongClickListener(v -> {
+
+        findViewById(R.id.textAlignmentRow).setOnClickListener(v -> {
+            String current = prefs.getString("text_alignment", "start");
+            prefs.edit().putString("text_alignment", current.equals("start") ? "center" : "start").apply();
+            updateUI();
+        });
+
+        findViewById(R.id.themeRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Appearance");
+            i.putExtra("title", "Theme");
             i.putExtra("description", "Controls the visual appearance of the app.");
             startActivity(i);
             return true;
         });
 
-        TextView permissionsRow = findViewById(R.id.permissionsRow);
-        permissionsRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, PermissionsActivity.class));
-        });
-        permissionsRow.setOnLongClickListener(v -> {
+        findViewById(R.id.textAlignmentRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Needed Permissions");
-            i.putExtra("description", "Manages permissions required for core functionality.");
+            i.putExtra("title", "Text alignment");
+            i.putExtra("description", "Sets how app names are aligned in the app drawer.");
             startActivity(i);
             return true;
         });
-
-        TextView appDrawerRow = findViewById(R.id.appDrawerRow);
-        appDrawerRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, AppDrawerActivity.class));
-        });
-        appDrawerRow.setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "App Drawer and Search");
-            i.putExtra("description", "Configures the app drawer and search behavior.");
-            startActivity(i);
-            return true;
-        });
-
-        lastTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        int currentTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
-        if (lastTheme != currentTheme) {
-            recreate();
-        }
+    private void updateUI() {
+        String alignment = prefs.getString("text_alignment", "start");
+        textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
     }
 
     private void applyTheme() {
