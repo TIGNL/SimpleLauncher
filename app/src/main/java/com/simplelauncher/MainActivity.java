@@ -468,8 +468,7 @@ public class MainActivity extends Activity {
                 }
                 if (i < itemsPerRow - 1) {
                     View div = convertView.findViewById(divIds[i]);
-                    boolean show = appIndex < filtered.size() && (appIndex + 1) < filtered.size();
-                    div.setVisibility(show ? View.VISIBLE : View.GONE);
+                    div.setVisibility(View.VISIBLE);
                 }
             }
 
