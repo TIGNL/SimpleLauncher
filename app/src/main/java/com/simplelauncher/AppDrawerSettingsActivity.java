@@ -7,68 +7,61 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class AppearanceActivity extends Activity {
+public class AppDrawerSettingsActivity extends Activity {
 
     private SharedPreferences prefs;
-    private TextView swipeToCloseStatus;
+    private TextView textAlignmentStatus;
+    private TextView itemsPerRowStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applyTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_appearance);
+        setContentView(R.layout.activity_app_drawer_settings);
 
-        ((TextView) findViewById(R.id.pageTitle)).setText("UI and Appearance");
+        ((TextView) findViewById(R.id.pageTitle)).setText("App Drawer");
 
         prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
+        textAlignmentStatus = findViewById(R.id.textAlignmentStatus);
+        itemsPerRowStatus = findViewById(R.id.itemsPerRowStatus);
 
         updateUI();
 
-        findViewById(R.id.themeRow).setOnClickListener(v -> {
-            startActivity(new Intent(this, ThemeActivity.class));
-        });
-
-        findViewById(R.id.swipeToCloseRow).setOnClickListener(v -> {
-            boolean current = prefs.getBoolean("swipe_to_close", true);
-            prefs.edit().putBoolean("swipe_to_close", !current).apply();
+        findViewById(R.id.textAlignmentRow).setOnClickListener(v -> {
+            String current = prefs.getString("text_alignment", "start");
+            prefs.edit().putString("text_alignment", current.equals("start") ? "center" : "start").apply();
             updateUI();
         });
 
-        findViewById(R.id.appDrawerRow).setOnClickListener(v -> {
-            startActivity(new Intent(this, AppDrawerSettingsActivity.class));
+        findViewById(R.id.itemsPerRowRow).setOnClickListener(v -> {
+            int current = prefs.getInt("items_per_row", 2);
+            prefs.edit().putInt("items_per_row", current == 1 ? 2 : 1).apply();
+            updateUI();
         });
 
-        findViewById(R.id.themeRow).setOnLongClickListener(v -> {
+        findViewById(R.id.textAlignmentRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Theme");
-            i.putExtra("description", "Controls the visual appearance of the app.");
+            i.putExtra("title", "Text alignment");
+            i.putExtra("description", "Sets how app names are aligned in the app drawer.");
             startActivity(i);
             return true;
         });
 
-        findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
+        findViewById(R.id.itemsPerRowRow).setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Swipe down to close");
-            i.putExtra("description", "Allows closing the app drawer by swiping down from the top.");
-            startActivity(i);
-            return true;
-        });
-
-        findViewById(R.id.appDrawerRow).setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "App Drawer");
-            i.putExtra("description", "Configures how apps are displayed in the app drawer.");
+            i.putExtra("title", "Items per row");
+            i.putExtra("description", "Sets how many apps to display per row in the app drawer.");
             startActivity(i);
             return true;
         });
     }
 
     private void updateUI() {
-        boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
+        String alignment = prefs.getString("text_alignment", "start");
+        int itemsPerRow = prefs.getInt("items_per_row", 2);
 
-        swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
-        swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
+        textAlignmentStatus.setText(alignment.equals("start") ? "Left" : "Centered");
+        itemsPerRowStatus.setText(String.valueOf(itemsPerRow));
     }
 
     private void applyTheme() {
