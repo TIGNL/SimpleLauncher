@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,7 +69,7 @@ public class GesturesActivity extends Activity {
         TextView status = findViewById(statusId);
         status.setText(GestureActions.labelFor(this, prefs.getString(key, GestureActions.defaultFor(key))));
 
-        TextView row = findViewById(rowId);
+        View row = findViewById(rowId);
         row.setOnClickListener(v -> {
             if (GestureActions.isFixed(key)) {
                 String message = key.equals("gesture_up")
