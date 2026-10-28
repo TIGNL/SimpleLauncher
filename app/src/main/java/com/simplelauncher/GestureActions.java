@@ -98,7 +98,7 @@ final class GestureActions {
             PackageManager pm = context.getPackageManager();
             Intent i = pm.getLaunchIntentForPackage(packageName);
             if (i != null && i.getComponent() != null) {
-                return i.getComponent().loadLabel(pm).toString();
+                return pm.getActivityInfo(i.getComponent(), 0).loadLabel(pm).toString();
             }
         } catch (Exception ignored) {
         }
