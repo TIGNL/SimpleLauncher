@@ -28,7 +28,7 @@ public class SettingsActivity extends Activity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (e1 != null && e2 != null && velocityY > 500 && (e2.getY() - e1.getY()) > 80) {
-                    goHome();
+                    finish();
                     return true;
                 }
                 return false;
@@ -57,18 +57,6 @@ public class SettingsActivity extends Activity {
             Intent i = new Intent(this, DescriptionActivity.class);
             i.putExtra("title", "Theme");
             i.putExtra("description", "Controls the visual appearance of the app.");
-            startActivity(i);
-            return true;
-        });
-
-        TextView appearanceRow = findViewById(R.id.appearanceRow);
-        appearanceRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, AppearanceActivity.class));
-        });
-        appearanceRow.setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "UI and Appearance");
-            i.putExtra("description", "Controls the visual appearance and UI behavior of the app.");
             startActivity(i);
             return true;
         });
@@ -113,13 +101,6 @@ public class SettingsActivity extends Activity {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         gestureDetector.onTouchEvent(ev);
         return super.dispatchTouchEvent(ev);
-    }
-
-    private void goHome() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 
     private void applyTheme() {

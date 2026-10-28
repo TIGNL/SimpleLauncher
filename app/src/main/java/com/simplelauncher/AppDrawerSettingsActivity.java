@@ -31,7 +31,7 @@ public class AppDrawerSettingsActivity extends Activity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (e1 != null && e2 != null && velocityY > 500 && (e2.getY() - e1.getY()) > 80) {
-                    goHome();
+                    finish();
                     return true;
                 }
                 return false;
@@ -87,13 +87,6 @@ public class AppDrawerSettingsActivity extends Activity {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         gestureDetector.onTouchEvent(ev);
         return super.dispatchTouchEvent(ev);
-    }
-
-    private void goHome() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 
     private void applyTheme() {

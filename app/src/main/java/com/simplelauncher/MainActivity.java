@@ -83,8 +83,7 @@ public class MainActivity extends Activity {
                             return true;
                         }
                     } else {
-                        boolean swipeClose = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("swipe_to_close", true);
-                        if (swipeClose && velocityY > 500 && diffY > 80 && listView != null
+                        if (velocityY > 500 && diffY > 80 && listView != null
                                 && listView.getFirstVisiblePosition() == 0) {
                             closeAppList();
                             return true;
