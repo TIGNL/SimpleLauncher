@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,34 +61,48 @@ public class MainActivity extends Activity {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
                 if (appListView == null) {
-                    showAppList();
+                    if (isOverSearchBar(e)) {
+                        showAppList();
+                    } else {
+                        performAction(prefAction("gesture_tap"));
+                    }
                 }
                 return true;
             }
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (e1 != null && e2 != null) {
-                    float diffY = e2.getY() - e1.getY();
-                    if (appListView == null) {
-                        if (velocityY < -500) {
-                            showAppList();
-                            return true;
-                        } else if (velocityY > 500) {
-                            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                            if (e1.getX() < screenWidth / 2) {
-                                expandNotifications();
-                            } else {
-                                expandQuickSettings();
-                            }
-                            return true;
-                        }
-                    } else {
-                        if (velocityY > 500 && diffY > 80 && listView != null
-                                && listView.getFirstVisiblePosition() == 0) {
-                            closeAppList();
-                            return true;
-                        }
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                boolean vertical = Math.abs(velocityY) >= Math.abs(velocityX);
+                int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+                if (appListView != null) {
+                    // The drawer only closes when the list is at the top, as before.
+                    if (velocityY > 500 && diffY > 80 && listView != null
+                            && listView.getFirstVisiblePosition() == 0) {
+                        closeAppList();
+                        return true;
+                    }
+                    return false;
+                }
+
+                if (vertical) {
+                    if (velocityY < -500) {
+                        performAction(prefAction("gesture_up"));
+                        return true;
+                    } else if (velocityY > 500) {
+                        performAction(prefAction(e1.getX() < screenWidth / 2
+                                ? "gesture_down_left" : "gesture_down_right"));
+                        return true;
+                    }
+                } else if (Math.abs(velocityX) > 500 && Math.abs(diffX) > 80) {
+                    float startX = e1.getX();
+                    // Stay away from the screen edges, where system back gestures live.
+                    if (startX > screenWidth * 0.1f && startX < screenWidth * 0.9f) {
+                        performAction(prefAction(diffX < 0 ? "gesture_left" : "gesture_right"));
+                        return true;
                     }
                 }
                 return false;
@@ -96,7 +111,7 @@ public class MainActivity extends Activity {
             @Override
             public void onLongPress(MotionEvent e) {
                 if (appListView == null) {
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    performAction(prefAction("gesture_long_press"));
                 }
             }
         });
@@ -335,17 +350,70 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void expandNotifications() {
-        LauncherAccessibilityService svc = LauncherAccessibilityService.getInstance();
-        if (svc != null) {
-            svc.openNotifications();
-        }
+    private String prefAction(String key) {
+        return getSharedPreferences("settings", MODE_PRIVATE)
+                .getString(key, GestureActions.defaultFor(key));
     }
 
-    private void expandQuickSettings() {
-        LauncherAccessibilityService svc = LauncherAccessibilityService.getInstance();
-        if (svc != null) {
-            svc.openQuickSettings();
+    private boolean isOverSearchBar(MotionEvent e) {
+        if (searchInput == null) return false;
+        android.graphics.Rect rect = new android.graphics.Rect();
+        return searchInput.getGlobalVisibleRect(rect)
+                && rect.contains((int) e.getRawX(), (int) e.getRawY());
+    }
+
+    /** Runs whichever action a home screen gesture is mapped to. */
+    private void performAction(String action) {
+        if (action == null || action.isEmpty() || GestureActions.NONE.equals(action)) {
+            return;
+        }
+
+        if (action.equals("drawer")) {
+            showAppList();
+            return;
+        }
+
+        if (action.equals("settings")) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return;
+        }
+
+        if (action.startsWith("a11y:")) {
+            LauncherAccessibilityService svc = LauncherAccessibilityService.getInstance();
+            if (svc == null) {
+                Toast.makeText(this, "Turn on the accessibility service in Needed Permissions",
+                        Toast.LENGTH_SHORT).show();
+            } else if (!svc.perform(action)) {
+                Toast.makeText(this, "This action is not supported on this device",
+                        Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        if (action.startsWith("app:")) {
+            String pkg = action.substring(4);
+            Intent launch = getPackageManager().getLaunchIntentForPackage(pkg);
+            if (launch != null) {
+                launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(launch);
+            } else {
+                Toast.makeText(this, "This app is no longer installed", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        if (action.startsWith("intent:")) {
+            Intent intent = GestureActions.intentFor(action);
+            try {
+                if (intent != null) {
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "This action is not available", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Nothing on this device can open this action",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

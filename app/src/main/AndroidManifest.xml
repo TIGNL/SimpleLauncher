@@ -59,6 +59,21 @@
             android:exported="false"
             android:theme="@style/Theme.SimpleLauncher" />
 
+        <activity
+            android:name=".GesturesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleLauncher" />
+
+        <activity
+            android:name=".ActionPickerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleLauncher" />
+
+        <activity
+            android:name=".AppPickerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleLauncher" />
+
         <service
             android:name=".LauncherAccessibilityService"
             android:exported="false"

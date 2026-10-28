@@ -73,6 +73,18 @@ public class SettingsActivity extends Activity {
             return true;
         });
 
+        TextView gesturesRow = findViewById(R.id.gesturesRow);
+        gesturesRow.setOnClickListener(v -> {
+            startActivity(new Intent(this, GesturesActivity.class));
+        });
+        gesturesRow.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "Gestures");
+            i.putExtra("description", "Controls what each gesture on the home screen does.");
+            startActivity(i);
+            return true;
+        });
+
         TextView permissionsRow = findViewById(R.id.permissionsRow);
         permissionsRow.setOnClickListener(v -> {
             startActivity(new Intent(this, PermissionsActivity.class));
