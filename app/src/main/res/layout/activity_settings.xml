@@ -18,22 +18,6 @@
             android:background="@drawable/divider_horizontal" />
 
         <TextView
-            android:id="@+id/themeRow"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
-            android:text="Theme"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider"
-            android:background="@drawable/divider_horizontal" />
-
-        <TextView
             android:id="@+id/appDrawerRow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
@@ -49,30 +33,16 @@
             android:layout_height="@dimen/divider"
             android:background="@drawable/divider_horizontal" />
 
-        <LinearLayout
-            android:id="@+id/swipeToCloseRow"
+        <TextView
+            android:id="@+id/permissionsRow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/padding">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Swipe down to close"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/swipeToCloseStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp" />
-
-        </LinearLayout>
+            android:paddingHorizontal="@dimen/padding"
+            android:text="Needed Permissions"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
         <View
             android:layout_width="match_parent"
@@ -96,13 +66,29 @@
             android:background="@drawable/divider_horizontal" />
 
         <TextView
-            android:id="@+id/permissionsRow"
+            android:id="@+id/themeRow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/padding"
-            android:text="Needed Permissions"
+            android:text="Theme"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider"
+            android:background="@drawable/divider_horizontal" />
+
+        <TextView
+            android:id="@+id/appearanceRow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/padding"
+            android:text="UI and Appearance"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
 

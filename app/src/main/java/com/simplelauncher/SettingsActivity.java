@@ -2,7 +2,6 @@ package com.simplelauncher;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -12,8 +11,6 @@ import android.widget.TextView;
 public class SettingsActivity extends Activity {
 
     private int lastTheme;
-    private SharedPreferences prefs;
-    private TextView swipeToCloseStatus;
     private GestureDetector gestureDetector;
 
     @Override
@@ -40,9 +37,17 @@ public class SettingsActivity extends Activity {
 
         ((TextView) findViewById(R.id.pageTitle)).setText("Settings");
 
-        prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        swipeToCloseStatus = findViewById(R.id.swipeToCloseStatus);
-        updateUI();
+        TextView appDrawerRow = findViewById(R.id.appDrawerRow);
+        appDrawerRow.setOnClickListener(v -> {
+            startActivity(new Intent(this, AppDrawerSettingsActivity.class));
+        });
+        appDrawerRow.setOnLongClickListener(v -> {
+            Intent i = new Intent(this, DescriptionActivity.class);
+            i.putExtra("title", "App Drawer");
+            i.putExtra("description", "Configures how apps are displayed in the app drawer.");
+            startActivity(i);
+            return true;
+        });
 
         TextView themeRow = findViewById(R.id.themeRow);
         themeRow.setOnClickListener(v -> {
@@ -56,27 +61,14 @@ public class SettingsActivity extends Activity {
             return true;
         });
 
-        TextView appDrawerRow = findViewById(R.id.appDrawerRow);
-        appDrawerRow.setOnClickListener(v -> {
-            startActivity(new Intent(this, AppDrawerSettingsActivity.class));
+        TextView appearanceRow = findViewById(R.id.appearanceRow);
+        appearanceRow.setOnClickListener(v -> {
+            startActivity(new Intent(this, AppearanceActivity.class));
         });
-        appDrawerRow.setOnLongClickListener(v -> {
+        appearanceRow.setOnLongClickListener(v -> {
             Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "App Drawer");
-            i.putExtra("description", "Configures how apps are displayed in the app drawer.");
-            startActivity(i);
-            return true;
-        });
-
-        findViewById(R.id.swipeToCloseRow).setOnClickListener(v -> {
-            boolean current = prefs.getBoolean("swipe_to_close", true);
-            prefs.edit().putBoolean("swipe_to_close", !current).apply();
-            updateUI();
-        });
-        findViewById(R.id.swipeToCloseRow).setOnLongClickListener(v -> {
-            Intent i = new Intent(this, DescriptionActivity.class);
-            i.putExtra("title", "Swipe down to close");
-            i.putExtra("description", "Allows closing the app drawer by swiping down from the top.");
+            i.putExtra("title", "UI and Appearance");
+            i.putExtra("description", "Controls the visual appearance and UI behavior of the app.");
             startActivity(i);
             return true;
         });
@@ -114,15 +106,7 @@ public class SettingsActivity extends Activity {
         int currentTheme = getSharedPreferences("settings", MODE_PRIVATE).getInt("theme", 0);
         if (lastTheme != currentTheme) {
             recreate();
-        } else {
-            updateUI();
         }
-    }
-
-    private void updateUI() {
-        boolean swipeClose = prefs.getBoolean("swipe_to_close", true);
-        swipeToCloseStatus.setText(swipeClose ? "On" : "Off");
-        swipeToCloseStatus.setTextColor(swipeClose ? 0xFF00AA00 : 0xFFCC0000);
     }
 
     @Override
