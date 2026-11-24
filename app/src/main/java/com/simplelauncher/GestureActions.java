@@ -146,7 +146,7 @@ final class GestureActions {
                 : action.substring(LEGACY_PREFIX.length());
         if (uri.isEmpty()) return null;
         try {
-            return Intent.parseUri(uri, Intent.URI_INTENT_FILTER);
+            return Intent.parseUri(uri, Intent.URI_INTENT_SCHEME | Intent.URI_ALLOW_UNSAFE);
         } catch (Exception e) {
             return null;
         }
@@ -156,7 +156,7 @@ final class GestureActions {
     static String shortcutAction(Intent target, String label) {
         if (target == null) return null;
         String name = label != null && !label.isEmpty() ? label : "Shortcut";
-        return LEGACY_PREFIX + target.toUri(Intent.URI_INTENT_FILTER) + "\n" + name;
+        return LEGACY_PREFIX + target.toUri(Intent.URI_INTENT_SCHEME) + "\n" + name;
     }
 
     /**
