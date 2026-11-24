@@ -27,7 +27,7 @@
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:maxLines="1"
-        android:paddingHorizontal="@dimen/padding"
+        android:padding="@dimen/item_padding"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint"
         android:textSize="15sp" />

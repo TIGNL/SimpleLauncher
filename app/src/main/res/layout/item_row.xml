@@ -6,7 +6,7 @@
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/padding">
+    android:padding="@dimen/item_padding">
 
     <TextView
         android:id="@+id/rowLabel"

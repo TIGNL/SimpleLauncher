@@ -23,7 +23,7 @@
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
+            android:padding="@dimen/item_padding"
             android:text="Dark"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
@@ -39,7 +39,7 @@
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
+            android:padding="@dimen/item_padding"
             android:text="Follow system"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
@@ -55,7 +55,7 @@
             android:layout_height="@dimen/row_height"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/padding"
+            android:padding="@dimen/item_padding"
             android:text="White"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
