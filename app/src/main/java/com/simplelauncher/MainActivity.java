@@ -241,23 +241,39 @@ public class MainActivity extends Activity {
         });
     }
 
+    /** Loads the app list off the UI thread so the home screen can draw right away. */
     private void loadApps() {
-        apps.clear();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, 0);
-        for (ResolveInfo info : list) {
-            if (!info.activityInfo.packageName.equals(getPackageName())) {
-                String label = info.loadLabel(getPackageManager()).toString();
-                apps.add(new String[]{label, info.activityInfo.packageName});
+        new Thread(() -> {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, 0);
+            List<String[]> loaded = new ArrayList<>();
+            for (ResolveInfo info : list) {
+                if (!info.activityInfo.packageName.equals(getPackageName())) {
+                    String label = info.loadLabel(getPackageManager()).toString();
+                    loaded.add(new String[]{label, info.activityInfo.packageName});
+                }
             }
-        }
-        Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
-        filtered.clear();
-        filtered.addAll(apps);
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        itemsPerRow = prefs.getInt("items_per_row", 2);
-        textAlignment = prefs.getString("text_alignment", "start");
+            Collections.sort(loaded, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                apps.clear();
+                apps.addAll(loaded);
+                String query = searchInput.getText().toString().trim().toLowerCase();
+                filtered.clear();
+                if (query.isEmpty()) {
+                    filtered.addAll(apps);
+                } else {
+                    for (String[] app : apps) {
+                        if (app[0].toLowerCase().contains(query)
+                                || app[1].toLowerCase().contains(query)) {
+                            filtered.add(app);
+                        }
+                    }
+                }
+                if (adapter != null) adapter.notifyDataSetChanged();
+            });
+        }, "load-apps").start();
     }
 
     private void showAppList() {
