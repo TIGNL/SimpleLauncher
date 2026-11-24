@@ -15,8 +15,8 @@ import android.widget.TextView;
 /**
  * Picks the action for one gesture. Actions are grouped into None,
  * Accessibility actions, Applications, Launcher actions and Shortcuts.
- * Shortcuts open ShortcutPickerActivity, which lists the real app shortcuts
- * published by each installed app.
+ * Shortcuts open ShortcutPickerActivity, which lists the apps that can create
+ * launcher shortcuts (android.intent.action.CREATE_SHORTCUT).
  */
 public class ActionPickerActivity extends Activity {
 

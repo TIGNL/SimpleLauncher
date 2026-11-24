@@ -402,19 +402,12 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if (action.startsWith(GestureActions.SHORTCUT_PREFIX)) {
-            String pkg = GestureActions.shortcutPackage(action);
-            String id = GestureActions.shortcutId(action);
-            android.content.pm.LauncherApps launcherApps =
-                    (android.content.pm.LauncherApps) getSystemService(LAUNCHER_APPS_SERVICE);
+        if (GestureActions.isShortcut(action)) {
+            Intent shortcut = GestureActions.shortcutIntent(action);
             try {
-                if (launcherApps == null || pkg == null || id == null
-                        || !launcherApps.hasShortcutHostPermission()) {
-                    Toast.makeText(this, "Set SimpleLauncher as your default home app to use shortcuts",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                launcherApps.startShortcut(pkg, id, null, null, android.os.Process.myUserHandle());
+                if (shortcut == null) throw new IllegalArgumentException("bad shortcut");
+                shortcut.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(shortcut);
             } catch (Exception e) {
                 Toast.makeText(this, "This shortcut is no longer available",
                         Toast.LENGTH_SHORT).show();

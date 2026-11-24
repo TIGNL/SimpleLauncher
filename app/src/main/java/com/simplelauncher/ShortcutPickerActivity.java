@@ -1,8 +1,9 @@
 package com.simplelauncher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ShortcutInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -10,21 +11,27 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 /**
- * Lets a gesture pick a real app shortcut. First level lists the apps that
- * publish shortcuts; picking one replaces the list with that app's shortcuts,
- * and picking one of those saves shortcut:&lt;package&gt;/&lt;id&gt; on the gesture.
- * Swipe down or Back steps back a level, then closes.
+ * Lets a gesture pick a classic launcher shortcut (android.intent.action.CREATE_SHORTCUT).
+ * The list shows every app that can create one, the same list Nova Launcher shows
+ * under its gesture Shortcuts tab. Picking an entry runs that app's shortcut screen
+ * (Google Maps for example opens its "Create widget" flow), and whatever it returns
+ * is saved on the gesture.
  */
 public class ShortcutPickerActivity extends Activity {
+
+    private static final int REQUEST_CREATE_SHORTCUT = 1001;
 
     private SharedPreferences prefs;
     private LinearLayout container;
     private String gestureKey;
     private GestureDetector gestureDetector;
-    private String selectedPackage;
     private TextView pageTitle;
+    private String pendingLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +48,7 @@ public class ShortcutPickerActivity extends Activity {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (e1 != null && e2 != null && velocityY > 500 && (e2.getY() - e1.getY()) > 80) {
-                    goBack();
+                    finish();
                     return true;
                 }
                 return false;
@@ -56,98 +63,76 @@ public class ShortcutPickerActivity extends Activity {
         build();
     }
 
-    /** Steps back from an app's shortcuts to the app list, then closes. */
-    private void goBack() {
-        if (selectedPackage != null) {
-            selectedPackage = null;
-            build();
-        } else {
-            finish();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (selectedPackage != null) {
-            selectedPackage = null;
-            build();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
     private void build() {
         container.removeAllViews();
-        if (selectedPackage == null) {
-            buildAppList();
-        } else {
-            buildShortcutList();
-        }
-    }
-
-    private void buildAppList() {
         pageTitle.setText("Shortcuts");
-        if (!GestureActions.hasShortcutHostPermission(this)) {
-            addNote("Set SimpleLauncher as your default home app to use shortcuts.");
-            addDivider();
-            return;
-        }
-        java.util.List<String[]> apps = GestureActions.appsWithShortcuts(this);
-        if (apps.isEmpty()) {
+
+        List<ResolveInfo> providers = GestureActions.shortcutProviders(this);
+        if (providers.isEmpty()) {
             addNote("No shortcuts found on this device.");
             addDivider();
             return;
         }
-        for (String[] app : apps) {
-            addAppRow(app[0], app[1]);
+        for (ResolveInfo info : providers) {
+            addProviderRow(GestureActions.providerLabel(this, info), info);
         }
         addDivider();
     }
 
-    private void buildShortcutList() {
-        pageTitle.setText(GestureActions.packageLabel(this, selectedPackage));
-        java.util.List<ShortcutInfo> shortcuts = GestureActions.shortcutsOf(this, selectedPackage);
-        if (shortcuts.isEmpty()) {
-            addNote("This app has no shortcuts right now.");
-            addDivider();
-            return;
-        }
-        for (ShortcutInfo info : shortcuts) {
-            addShortcutRow(GestureActions.shortcutLabelOf(info), info.getId());
-        }
-        addDivider();
-    }
-
-    /** One line of explanation instead of a list, e.g. when no shortcut host exists. */
+    /** One line of explanation instead of a list, e.g. when nothing can create shortcuts. */
     private void addNote(String text) {
         TextView note = (TextView) getLayoutInflater().inflate(R.layout.item_section_header, container, false);
         note.setText(text);
         container.addView(note);
     }
 
-    private void addAppRow(String label, final String packageName) {
+    private void addProviderRow(String label, final ResolveInfo info) {
         View row = getLayoutInflater().inflate(R.layout.item_row, container, false);
         ((TextView) row.findViewById(R.id.rowLabel)).setText(label);
-        row.setOnClickListener(v -> {
-            selectedPackage = packageName;
-            build();
-        });
+        row.setOnClickListener(v -> launchProvider(label, info));
         container.addView(row);
         addDivider();
     }
 
-    private void addShortcutRow(String label, final String shortcutId) {
-        View row = getLayoutInflater().inflate(R.layout.item_row, container, false);
-        ((TextView) row.findViewById(R.id.rowLabel)).setText(label);
-        row.setOnClickListener(v -> {
-            if (gestureKey != null) {
-                prefs.edit().putString(gestureKey,
-                        GestureActions.SHORTCUT_PREFIX + selectedPackage + "/" + shortcutId).apply();
-            }
-            finish();
-        });
-        container.addView(row);
-        addDivider();
+    /** Runs the app's own shortcut screen; its result comes back to onActivityResult. */
+    private void launchProvider(String label, ResolveInfo info) {
+        pendingLabel = label;
+        Intent intent = new Intent(Intent.ACTION_CREATE_SHORTCUT);
+        intent.setClassName(info.activityInfo.packageName, info.activityInfo.name);
+        try {
+            startActivityForResult(intent, REQUEST_CREATE_SHORTCUT);
+        } catch (Exception e) {
+            pendingLabel = null;
+            Toast.makeText(this, "This shortcut could not be opened",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_CREATE_SHORTCUT) return;
+
+        String label = pendingLabel;
+        pendingLabel = null;
+
+        if (resultCode != RESULT_OK || data == null) {
+            return;
+        }
+        Intent target = data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
+        if (target == null) {
+            Toast.makeText(this, "This app did not return a shortcut",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
+        if (name == null || name.isEmpty()) name = label;
+
+        String action = GestureActions.shortcutAction(target, name);
+        if (action != null && gestureKey != null) {
+            prefs.edit().putString(gestureKey, action).apply();
+        }
+        finish();
     }
 
     private void addDivider() {
