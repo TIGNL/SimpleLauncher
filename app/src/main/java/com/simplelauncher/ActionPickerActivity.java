@@ -15,6 +15,8 @@ import android.widget.TextView;
 /**
  * Picks the action for one gesture. Actions are grouped into None,
  * Accessibility actions, Applications, Launcher actions and Shortcuts.
+ * Shortcuts open ShortcutPickerActivity, which lists the real app shortcuts
+ * published by each installed app.
  */
 public class ActionPickerActivity extends Activity {
 
@@ -62,7 +64,8 @@ public class ActionPickerActivity extends Activity {
 
     private String current() {
         if (gestureKey == null) return GestureActions.NONE;
-        return prefs.getString(gestureKey, GestureActions.defaultFor(gestureKey));
+        return GestureActions.normalize(
+                prefs.getString(gestureKey, GestureActions.defaultFor(gestureKey)));
     }
 
     private void build() {
@@ -92,11 +95,10 @@ public class ActionPickerActivity extends Activity {
         addDivider();
 
         addHeader("Shortcuts");
-        for (String[] action : GestureActions.shortcutActions()) {
-            if (GestureActions.isAvailable(action[0])) {
-                addRow(action[1], action[0], current);
-            }
+        if (GestureActions.isShortcut(current)) {
+            addRow(GestureActions.labelFor(this, current), current, current);
         }
+        addRow("Choose a shortcut\u2026", GestureActions.CHOOSE_SHORTCUT, current);
         addDivider();
     }
 
@@ -116,6 +118,12 @@ public class ActionPickerActivity extends Activity {
         row.setOnClickListener(v -> {
             if (GestureActions.CHOOSE_APP.equals(value)) {
                 Intent i = new Intent(ActionPickerActivity.this, AppPickerActivity.class);
+                i.putExtra("gesture", gestureKey);
+                startActivity(i);
+                return;
+            }
+            if (GestureActions.CHOOSE_SHORTCUT.equals(value)) {
+                Intent i = new Intent(ActionPickerActivity.this, ShortcutPickerActivity.class);
                 i.putExtra("gesture", gestureKey);
                 startActivity(i);
                 return;

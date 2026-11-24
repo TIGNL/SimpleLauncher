@@ -351,8 +351,8 @@ public class MainActivity extends Activity {
     }
 
     private String prefAction(String key) {
-        return getSharedPreferences("settings", MODE_PRIVATE)
-                .getString(key, GestureActions.defaultFor(key));
+        return GestureActions.normalize(getSharedPreferences("settings", MODE_PRIVATE)
+                .getString(key, GestureActions.defaultFor(key)));
     }
 
     private boolean isOverSearchBar(MotionEvent e) {
@@ -402,16 +402,21 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if (action.startsWith("intent:")) {
-            Intent intent = GestureActions.intentFor(action);
+        if (action.startsWith(GestureActions.SHORTCUT_PREFIX)) {
+            String pkg = GestureActions.shortcutPackage(action);
+            String id = GestureActions.shortcutId(action);
+            android.content.pm.LauncherApps launcherApps =
+                    (android.content.pm.LauncherApps) getSystemService(LAUNCHER_APPS_SERVICE);
             try {
-                if (intent != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "This action is not available", Toast.LENGTH_SHORT).show();
+                if (launcherApps == null || pkg == null || id == null
+                        || !launcherApps.hasShortcutHostPermission()) {
+                    Toast.makeText(this, "Set SimpleLauncher as your default home app to use shortcuts",
+                            Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                launcherApps.startShortcut(pkg, id, null, null, android.os.Process.myUserHandle());
             } catch (Exception e) {
-                Toast.makeText(this, "Nothing on this device can open this action",
+                Toast.makeText(this, "This shortcut is no longer available",
                         Toast.LENGTH_SHORT).show();
             }
         }
